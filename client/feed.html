@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>News Feed — ConflictPulse</title>
+  <meta name="description" content="Real-time war and conflict news feed. Filtered, summarized and scored by AI."/>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="icon" href="icons/icon-192.png"/>
+  <meta name="theme-color" content="#0A0E1A"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"/>
+  <style>
+    :root{
+      --bg:#0A0E1A; --bg2:#111827; --bg3:#1E2D40;
+      --accent:#FF3B3B; --accent2:#FF6B6B;
+      --blue:#3B82F6; --green:#22C55E; --amber:#F59E0B;
+      --text:#F0F4F8; --muted:#94A3B8; --border:#1E293B;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;}
+
+    /* NAV */
+    nav{position:sticky;top:0;z-index:100;padding:0.8rem 1.5rem;display:flex;justify-content:space-between;align-items:center;background:rgba(10,14,26,0.97);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);}
+    .logo{display:flex;align-items:center;gap:0.5rem;text-decoration:none;}
+    .logo-pulse{width:9px;height:9px;background:var(--accent);border-radius:50%;animation:pulse 1.5s infinite;}
+    .logo-text{font-family:'Space Grotesk',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text);}
+    .logo-text span{color:var(--accent);}
+    .nav-right{display:flex;align-items:center;gap:1rem;}
+    .nav-live{display:flex;align-items:center;gap:0.4rem;color:var(--accent);font-size:0.75rem;font-weight:700;background:rgba(255,59,59,0.1);padding:0.3rem 0.7rem;border-radius:99px;border:1px solid rgba(255,59,59,0.3);}
+    .live-dot{width:7px;height:7px;background:var(--accent);border-radius:50%;animation:pulse 1s infinite;}
+    .nav-home{color:var(--muted);text-decoration:none;font-size:0.85rem;font-weight:500;}
+    .nav-home:hover{color:var(--text);}
+
+    /* BREAKING BANNER */
+    .breaking-banner{background:linear-gradient(135deg,#7f0000,var(--accent));padding:0;overflow:hidden;display:none;}
+    .breaking-banner.active{display:block;}
+    .breaking-inner{display:flex;align-items:stretch;}
+    .breaking-label{background:rgba(0,0,0,0.3);padding:0.7rem 1rem;font-size:0.75rem;font-weight:800;letter-spacing:0.1em;white-space:nowrap;display:flex;align-items:center;gap:0.4rem;}
+    .breaking-scroll{flex:1;overflow:hidden;padding:0.7rem 1rem;}
+    .breaking-items{display:flex;gap:2rem;animation:ticker 20s linear infinite;white-space:nowrap;}
+    .breaking-item{font-size:0.85rem;font-weight:600;cursor:pointer;white-space:nowrap;}
+    .breaking-item:hover{text-decoration:underline;}
+
+    /* LAYOUT */
+    .layout{display:grid;grid-template-columns:280px 1fr;gap:0;min-height:calc(100vh - 60px);}
+
+    /* SIDEBAR */
+    .sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:1.5rem;position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto;}
+    .sidebar::-webkit-scrollbar{width:4px;}
+    .sidebar::-webkit-scrollbar-track{background:transparent;}
+    .sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+    .sidebar-title{font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem;margin-top:1.5rem;}
+    .sidebar-title:first-child{margin-top:0;}
+
+    /* SEARCH */
+    .search-wrap{position:relative;margin-bottom:1.5rem;}
+    .search-wrap input{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:0.7rem 0.8rem 0.7rem 2.4rem;border-radius:8px;font-size:0.9rem;outline:none;transition:border-color 0.2s;font-family:'Inter',sans-serif;}
+    .search-wrap input:focus{border-color:rgba(255,59,59,0.5);}
+    .search-wrap input::placeholder{color:var(--muted);}
+    .search-icon{position:absolute;left:0.8rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:0.9rem;}
+
+    /* FILTER CHIPS */
+    .filter-group{display:flex;flex-direction:column;gap:0.4rem;margin-bottom:0.5rem;}
+    .filter-chip{display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0.8rem;border-radius:6px;cursor:pointer;transition:all 0.15s;border:1px solid transparent;font-size:0.85rem;color:var(--muted);}
+    .filter-chip:hover{background:var(--bg3);color:var(--text);}
+    .filter-chip.active{background:rgba(255,59,59,0.1);border-color:rgba(255,59,59,0.3);color:var(--text);}
+    .filter-chip-dot{width:8px;height:8px;border-radius:50%;}
+    .chip-count{font-size:0.7rem;background:var(--bg3);padding:0.15rem 0.4rem;border-radius:99px;color:var(--muted);}
+
+    /* SORT */
+    .sort-select{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:0.6rem 0.8rem;border-radius:8px;font-size:0.85rem;outline:none;cursor:pointer;font-family:'Inter',sans-serif;}
+
+    /* CLEAR BTN */
+    .clear-btn{width:100%;padding:0.6rem;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;cursor:pointer;font-size:0.8rem;margin-top:1rem;transition:all 0.2s;font-family:'Inter',sans-serif;}
+    .clear-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+    /* MAIN FEED */
+    .main{padding:1.5rem;}
+
+    /* TOOLBAR */
+    .toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;}
+    .toolbar-left{display:flex;align-items:center;gap:1rem;}
+    .result-count{font-size:0.85rem;color:var(--muted);}
+    .result-count strong{color:var(--text);}
+    .view-toggle{display:flex;gap:0.3rem;}
+    .view-btn{padding:0.4rem 0.6rem;background:var(--bg2);border:1px solid var(--border);color:var(--muted);border-radius:6px;cursor:pointer;font-size:0.85rem;transition:all 0.15s;}
+    .view-btn.active{background:var(--bg3);color:var(--text);border-color:var(--muted);}
+
+    /* ACTIVE FILTERS BAR */
+    .active-filters{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;}
+    .active-tag{display:flex;align-items:center;gap:0.4rem;background:rgba(255,59,59,0.1);border:1px solid rgba(255,59,59,0.3);color:var(--accent);padding:0.3rem 0.7rem;border-radius:99px;font-size:0.75rem;font-weight:600;}
+    .active-tag button{background:none;border:none;color:var(--accent);cursor:pointer;font-size:0.9rem;line-height:1;padding:0;}
+
+    /* ARTICLE GRID */
+    .articles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.2rem;}
+    .articles-grid.list-view{grid-template-columns:1fr;}
+
+    /* ARTICLE CARD */
+    .article-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all 0.25s;cursor:pointer;display:flex;flex-direction:column;}
+    .article-card:hover{border-color:rgba(255,59,59,0.3);transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,0.3);}
+    .articles-grid.list-view .article-card{flex-direction:row;}
+    .card-image{width:100%;height:180px;object-fit:cover;background:var(--bg3);}
+    .articles-grid.list-view .card-image{width:200px;height:auto;flex-shrink:0;}
+    .card-image-placeholder{width:100%;height:180px;background:linear-gradient(135deg,var(--bg3),var(--bg));display:flex;align-items:center;justify-content:center;font-size:2.5rem;}
+    .articles-grid.list-view .card-image-placeholder{width:200px;height:auto;min-height:140px;flex-shrink:0;}
+    .card-body{padding:1.2rem;flex:1;display:flex;flex-direction:column;}
+    .card-meta{display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.7rem;}
+    .badge{display:inline-flex;align-items:center;gap:0.25rem;padding:0.2rem 0.6rem;border-radius:99px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;}
+    .badge-breaking{background:rgba(255,59,59,0.15);color:var(--accent);border:1px solid rgba(255,59,59,0.3);animation:blink 1.5s infinite;}
+    .badge-high{background:rgba(245,158,11,0.15);color:var(--amber);}
+    .badge-medium{background:rgba(59,130,246,0.15);color:var(--blue);}
+    .badge-low{background:rgba(148,163,184,0.1);color:var(--muted);}
+    .badge-region{background:var(--bg3);color:var(--muted);}
+    .badge-topic{background:rgba(34,197,94,0.1);color:var(--green);}
+    .card-title{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:600;line-height:1.4;margin-bottom:0.6rem;color:var(--text);}
+    .card-summary{font-size:0.85rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+    .card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:0.8rem;border-top:1px solid var(--border);}
+    .card-source{font-size:0.75rem;color:var(--muted);font-weight:500;}
+    .card-date{font-size:0.72rem;color:var(--muted);}
+    .card-actions{display:flex;align-items:center;gap:0.8rem;}
+    .card-score{display:flex;align-items:center;gap:0.3rem;font-size:0.75rem;font-weight:700;}
+    .score-bar{width:30px;height:4px;border-radius:2px;background:var(--border);}
+    .score-fill{height:100%;border-radius:2px;transition:width 0.3s;}
+    .action-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.8rem;display:flex;align-items:center;gap:0.25rem;transition:color 0.15s;padding:0.2rem 0.4rem;border-radius:4px;}
+    .action-btn:hover{color:var(--text);background:var(--bg3);}
+    .action-btn.liked{color:var(--accent);}
+    .entities{display:flex;flex-wrap:wrap;gap:0.3rem;margin-bottom:0.7rem;}
+    .entity-tag{background:var(--bg3);color:var(--muted);font-size:0.68rem;padding:0.15rem 0.5rem;border-radius:4px;}
+
+    /* SKELETON LOADER */
+    .skeleton{background:linear-gradient(90deg,var(--bg2) 25%,var(--bg3) 50%,var(--bg2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px;}
+    .skel-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+    .skel-img{height:180px;}
+    .skel-body{padding:1.2rem;}
+    .skel-line{height:12px;margin-bottom:8px;border-radius:4px;}
+    .skel-line.short{width:60%;}
+    .skel-line.shorter{width:40%;}
+
+    /* EMPTY STATE */
+    .empty-state{text-align:center;padding:4rem 2rem;grid-column:1/-1;}
+    .empty-icon{font-size:3rem;margin-bottom:1rem;}
+    .empty-title{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:600;margin-bottom:0.5rem;}
+    .empty-sub{color:var(--muted);font-size:0.9rem;}
+
+    /* LOAD MORE */
+    .load-more-wrap{text-align:center;margin-top:2rem;grid-column:1/-1;}
+    .load-more-btn{background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:0.8rem 2rem;border-radius:8px;cursor:pointer;font-size:0.9rem;font-weight:600;transition:all 0.2s;font-family:'Inter',sans-serif;}
+    .load-more-btn:hover{border-color:var(--accent);color:var(--accent);}
+    .load-more-btn:disabled{opacity:0.5;cursor:not-allowed;}
+
+    /* ARTICLE MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+    .modal-overlay.open{opacity:1;pointer-events:all;}
+    .modal{background:var(--bg2);border:1px solid var(--border);border-radius:16px;max-width:720px;width:100%;max-height:90vh;overflow-y:auto;position:relative;}
+    .modal::-webkit-scrollbar{width:4px;}
+    .modal::-webkit-scrollbar-thumb{background:var(--border);}
+    .modal-close{position:absolute;top:1rem;right:1rem;background:var(--bg3);border:none;color:var(--text);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;z-index:1;}
+    .modal-img{width:100%;height:280px;object-fit:cover;border-radius:12px 12px 0 0;}
+    .modal-img-placeholder{width:100%;height:200px;background:linear-gradient(135deg,var(--bg3),var(--bg));display:flex;align-items:center;justify-content:center;font-size:4rem;border-radius:12px 12px 0 0;}
+    .modal-body{padding:2rem;}
+    .modal-meta{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;}
+    .modal-title{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;line-height:1.3;margin-bottom:1rem;}
+    .modal-summary{color:var(--muted);font-size:0.95rem;line-height:1.8;margin-bottom:1.5rem;padding:1rem;background:var(--bg3);border-radius:8px;border-left:3px solid var(--accent);}
+    .modal-info{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;}
+    .info-item{background:var(--bg3);padding:0.8rem;border-radius:8px;}
+    .info-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:0.3rem;}
+    .info-value{font-size:0.9rem;font-weight:600;}
+    .score-display{display:flex;align-items:center;gap:0.5rem;}
+    .score-circle{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.9rem;}
+    .modal-entities{margin-bottom:1.5rem;}
+    .modal-entities .entities{gap:0.4rem;}
+    .modal-entities .entity-tag{font-size:0.8rem;padding:0.25rem 0.7rem;}
+    .modal-actions{display:flex;gap:1rem;flex-wrap:wrap;}
+    .modal-btn{padding:0.8rem 1.5rem;border-radius:8px;font-weight:600;font-size:0.9rem;cursor:pointer;transition:all 0.2s;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:0.5rem;text-decoration:none;}
+    .modal-btn-primary{background:var(--accent);border:none;color:#fff;}
+    .modal-btn-primary:hover{background:#cc2f2f;}
+    .modal-btn-secondary{background:var(--bg3);border:1px solid var(--border);color:var(--text);}
+    .modal-btn-secondary:hover{border-color:var(--muted);}
+
+    /* MOBILE SIDEBAR */
+    .mobile-filter-btn{display:none;align-items:center;gap:0.5rem;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:0.5rem 1rem;border-radius:8px;cursor:pointer;font-size:0.85rem;font-weight:600;font-family:'Inter',sans-serif;}
+    .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:150;}
+    .sidebar-overlay.open{display:block;}
+    .sidebar.mobile-open{display:block;position:fixed;left:0;top:0;bottom:0;z-index:160;width:290px;}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:2rem;right:2rem;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:0.8rem 1.2rem;border-radius:8px;font-size:0.85rem;font-weight:500;z-index:300;transform:translateY(100px);opacity:0;transition:all 0.3s;max-width:280px;}
+    .toast.show{transform:translateY(0);opacity:1;}
+
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(1.3);}}
+    @keyframes ticker{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+    @keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+    @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.6;}}
+
+    @media(max-width:900px){
+      .layout{grid-template-columns:1fr;}
+      .sidebar{display:none;height:100vh;}
+      .mobile-filter-btn{display:flex;}
+    }
+    @media(max-width:600px){
+      .articles-grid{grid-template-columns:1fr;}
+      .modal-info{grid-template-columns:1fr;}
+      .articles-grid.list-view .article-card{flex-direction:column;}
+      .articles-grid.list-view .card-image,
+      .articles-grid.list-view .card-image-placeholder{width:100%;height:180px;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-pulse"></div>
+    <span class="logo-text">Conflict<span>Pulse</span></span>
+  </a>
+  <div class="nav-right">
+    <div class="nav-live"><div class="live-dot"></div>LIVE FEED</div>
+    <a href="index.html" class="nav-home">← Home</a>
+  </div>
+</nav>
+
+<!-- BREAKING BANNER -->
+<div class="breaking-banner" id="breakingBanner">
+  <div class="breaking-inner">
+    <div class="breaking-label">🔴 BREAKING</div>
+    <div class="breaking-scroll">
+      <div class="breaking-items" id="breakingItems"></div>
+    </div>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR OVERLAY (mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <button class="mobile-filter-btn" style="display:none;" onclick="closeSidebar()">✕ Close Filters</button>
+
+    <!-- SEARCH -->
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Search conflicts, countries..."/>
+    </div>
+
+    <!-- IMPORTANCE -->
+    <div class="sidebar-title">Importance</div>
+    <div class="filter-group" id="importanceFilters">
+      <div class="filter-chip" data-type="importance" data-value="breaking" onclick="toggleFilter(this)">
+        <span>🔴 Breaking</span><span class="chip-count" id="cnt-breaking">0</span>
+      </div>
+      <div class="filter-chip" data-type="importance" data-value="high" onclick="toggleFilter(this)">
+        <span>🟠 High</span><span class="chip-count" id="cnt-high">0</span>
+      </div>
+      <div class="filter-chip" data-type="importance" data-value="medium" onclick="toggleFilter(this)">
+        <span>🔵 Medium</span><span class="chip-count" id="cnt-medium">0</span>
+      </div>
+      <div class="filter-chip" data-type="importance" data-value="low" onclick="toggleFilter(this)">
+        <span>⚪ Low</span><span class="chip-count" id="cnt-low">0</span>
+      </div>
+    </div>
+
+    <!-- REGION -->
+    <div class="sidebar-title">Region</div>
+    <div class="filter-group" id="regionFilters">
+      <div class="filter-chip" data-type="region" data-value="Middle East" onclick="toggleFilter(this)">🕌 Middle East</div>
+      <div class="filter-chip" data-type="region" data-value="Europe" onclick="toggleFilter(this)">🇪🇺 Europe</div>
+      <div class="filter-chip" data-type="region" data-value="Russia & CIS" onclick="toggleFilter(this)">🐻 Russia & CIS</div>
+      <div class="filter-chip" data-type="region" data-value="Africa" onclick="toggleFilter(this)">🌍 Africa</div>
+      <div class="filter-chip" data-type="region" data-value="Asia" onclick="toggleFilter(this)">🌏 Asia</div>
+      <div class="filter-chip" data-type="region" data-value="South Asia" onclick="toggleFilter(this)">🇮🇳 South Asia</div>
+      <div class="filter-chip" data-type="region" data-value="Americas" onclick="toggleFilter(this)">🌎 Americas</div>
+      <div class="filter-chip" data-type="region" data-value="Global" onclick="toggleFilter(this)">🌐 Global</div>
+    </div>
+
+    <!-- TOPIC -->
+    <div class="sidebar-title">Topic</div>
+    <div class="filter-group" id="topicFilters">
+      <div class="filter-chip" data-type="topic" data-value="Airstrikes" onclick="toggleFilter(this)">💥 Airstrikes</div>
+      <div class="filter-chip" data-type="topic" data-value="Ground Combat" onclick="toggleFilter(this)">⚔️ Ground Combat</div>
+      <div class="filter-chip" data-type="topic" data-value="Casualties" onclick="toggleFilter(this)">💔 Casualties</div>
+      <div class="filter-chip" data-type="topic" data-value="Diplomacy" onclick="toggleFilter(this)">🤝 Diplomacy</div>
+      <div class="filter-chip" data-type="topic" data-value="Ceasefire" onclick="toggleFilter(this)">🕊️ Ceasefire</div>
+      <div class="filter-chip" data-type="topic" data-value="Sanctions" onclick="toggleFilter(this)">🚫 Sanctions</div>
+      <div class="filter-chip" data-type="topic" data-value="Weapons" onclick="toggleFilter(this)">🔫 Weapons</div>
+      <div class="filter-chip" data-type="topic" data-value="War Crimes" onclick="toggleFilter(this)">⚖️ War Crimes</div>
+      <div class="filter-chip" data-type="topic" data-value="Nuclear" onclick="toggleFilter(this)">☢️ Nuclear</div>
+      <div class="filter-chip" data-type="topic" data-value="Cyber" onclick="toggleFilter(this)">💻 Cyber</div>
+      <div class="filter-chip" data-type="topic" data-value="Protests" onclick="toggleFilter(this)">✊ Protests</div>
+    </div>
+
+    <!-- SORT -->
+    <div class="sidebar-title">Sort By</div>
+    <select class="sort-select" id="sortSelect" onchange="loadArticles(true)">
+      <option value="latest">📅 Latest First</option>
+      <option value="oldest">📅 Oldest First</option>
+      <option value="views">👁️ Most Viewed</option>
+      <option value="score">🔥 Conflict Score</option>
+    </select>
+
+    <button class="clear-btn" onclick="clearFilters()">✕ Clear All Filters</button>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <button class="mobile-filter-btn" onclick="openSidebar()">⚙️ Filters</button>
+        <div class="result-count" id="resultCount">Loading...</div>
+      </div>
+      <div class="view-toggle">
+        <button class="view-btn active" id="gridBtn" onclick="setView('grid')" title="Grid view">▦</button>
+        <button class="view-btn" id="listBtn" onclick="setView('list')" title="List view">☰</button>
+      </div>
+    </div>
+
+    <!-- ACTIVE FILTERS -->
+    <div class="active-filters" id="activeFilters"></div>
+
+    <!-- ARTICLES -->
+    <div class="articles-grid" id="articlesGrid"></div>
+
+  </main>
+</div>
+
+<!-- ARTICLE MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOnOverlay(event)">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'https://conflictpulse-api.onrender.com';
+let page = 1, totalPages = 1, loading = false, currentView = 'grid';
+let filters = { region: null, topic: null, importance: null, search: '' };
+let likedArticles = JSON.parse(localStorage.getItem('likedArticles') || '[]');
+let visitorId = localStorage.getItem('visitorId') || crypto.randomUUID();
+localStorage.setItem('visitorId', visitorId);
+
+// ── INIT ──────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  loadArticles(true);
+  trackVisit('/feed');
+
+  // Search debounce
+  let searchTimer;
+  document.getElementById('searchInput').addEventListener('input', e => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      filters.search = e.target.value.trim();
+      loadArticles(true);
+    }, 500);
+  });
+
+  // Service worker
+  if('serviceWorker' in navigator)
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+});
+
+// ── FETCH ARTICLES ────────────────────────────────────
+async function loadArticles(reset = false) {
+  if(loading) return;
+  if(reset){ page = 1; }
+
+  loading = true;
+  if(reset) showSkeletons();
+
+  try {
+    const params = new URLSearchParams({ page, limit: 18, sort: document.getElementById('sortSelect').value });
+    if(filters.region)     params.set('region', filters.region);
+    if(filters.topic)      params.set('topic', filters.topic);
+    if(filters.importance) params.set('importance', filters.importance);
+    if(filters.search)     params.set('search', filters.search);
+
+    const res = await fetch(`${API}/api/news?${params}`);
+    const data = await res.json();
+
+    totalPages = data.pagination?.pages || 1;
+
+    if(reset){
+      renderArticles(data.articles || [], false);
+      updateCount(data.pagination?.total || 0);
+      renderBreaking(data.breaking || []);
+    } else {
+      appendArticles(data.articles || []);
+    }
+
+    updateCounts(data.articles || []);
+    page++;
+  } catch(e) {
+    if(reset) showError();
+  } finally {
+    loading = false;
+  }
+}
+
+// ── RENDER ARTICLES ───────────────────────────────────
+function renderArticles(articles, append = false) {
+  const grid = document.getElementById('articlesGrid');
+  if(!append) grid.innerHTML = '';
+
+  if(!articles.length && !append){
+    grid.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">🔍</div>
+      <div class="empty-title">No articles found</div>
+      <div class="empty-sub">Try adjusting your filters or search terms</div>
+    </div>`;
+    return;
+  }
+
+  articles.forEach(a => grid.appendChild(createCard(a)));
+
+  // Load more button
+  const existing = grid.querySelector('.load-more-wrap');
+  if(existing) existing.remove();
+  if(page <= totalPages){
+    const wrap = document.createElement('div');
+    wrap.className = 'load-more-wrap';
+    wrap.innerHTML = `<button class="load-more-btn" onclick="loadMore()">Load More Articles</button>`;
+    grid.appendChild(wrap);
+  }
+}
+
+function appendArticles(articles) {
+  const grid = document.getElementById('articlesGrid');
+  const loadWrap = grid.querySelector('.load-more-wrap');
+  if(loadWrap) loadWrap.remove();
+  articles.forEach(a => grid.appendChild(createCard(a)));
+  if(page <= totalPages){
+    const wrap = document.createElement('div');
+    wrap.className = 'load-more-wrap';
+    wrap.innerHTML = `<button class="load-more-btn" onclick="loadMore()">Load More Articles</button>`;
+    grid.appendChild(wrap);
+  }
+}
+
+function loadMore(){ loadArticles(false); }
+
+// ── CREATE CARD ───────────────────────────────────────
+function createCard(article) {
+  const el = document.createElement('div');
+  el.className = 'article-card';
+  el.onclick = () => openModal(article);
+
+  const score = article.conflictScore || 5;
+  const scoreColor = score >= 8 ? '#FF3B3B' : score >= 5 ? '#F59E0B' : '#22C55E';
+  const isLiked = likedArticles.includes(article._id);
+  const timeAgo = getTimeAgo(article.publishedAt);
+  const entities = (article.entities || []).slice(0,4);
+
+  const imgHtml = article.imageUrl
+    ? `<img class="card-image" src="${article.imageUrl}" alt="${article.title}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"/><div class="card-image-placeholder" style="display:none;">${getRegionEmoji(article.region)}</div>`
+    : `<div class="card-image-placeholder">${getRegionEmoji(article.region)}</div>`;
+
+  el.innerHTML = `
+    ${imgHtml}
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="badge badge-${article.importance}">${importanceDot(article.importance)} ${article.importance?.toUpperCase()}</span>
+        <span class="badge badge-region">${article.region}</span>
+        <span class="badge badge-topic">${article.topic}</span>
+      </div>
+      <div class="card-title">${article.title}</div>
+      ${entities.length ? `<div class="entities">${entities.map(e=>`<span class="entity-tag">${e}</span>`).join('')}</div>` : ''}
+      <div class="card-summary">${article.summary || 'No summary available.'}</div>
+      <div class="card-footer">
+        <div>
+          <div class="card-source">📡 ${article.source}</div>
+          <div class="card-date">${timeAgo}</div>
+        </div>
+        <div class="card-actions">
+          <div class="card-score">
+            <div class="score-bar"><div class="score-fill" style="width:${score*10}%;background:${scoreColor};"></div></div>
+            <span style="color:${scoreColor}">${score}/10</span>
+          </div>
+          <button class="action-btn ${isLiked?'liked':''}" onclick="likeArticle(event,'${article._id}',this)">
+            ${isLiked?'❤️':'🤍'} <span>${article.likes||0}</span>
+          </button>
+          <button class="action-btn" onclick="shareArticle(event,'${article._id}','${article.title.replace(/'/g,"\\'")}')">
+            🔗
+          </button>
+        </div>
+      </div>
+    </div>`;
+
+  return el;
+}
+
+// ── BREAKING BANNER ───────────────────────────────────
+function renderBreaking(breaking) {
+  const banner = document.getElementById('breakingBanner');
+  const items = document.getElementById('breakingItems');
+  if(!breaking.length){ banner.classList.remove('active'); return; }
+
+  banner.classList.add('active');
+  const html = [...breaking, ...breaking].map(b =>
+    `<span class="breaking-item" onclick="openModal(${JSON.stringify(b).replace(/"/g,'&quot;')})">
+      ⚡ ${b.title}
+    </span>`
+  ).join('');
+  items.innerHTML = html;
+}
+
+// ── MODAL ─────────────────────────────────────────────
+function openModal(article) {
+  fetch(`${API}/api/news/${article._id}/view`, {method:'POST'}).catch(()=>{});
+  trackVisit('/article', article._id);
+
+  const score = article.conflictScore || 5;
+  const scoreColor = score >= 8 ? '#FF3B3B' : score >= 5 ? '#F59E0B' : '#22C55E';
+
+  const imgHtml = article.imageUrl
+    ? `<img class="modal-img" src="${article.imageUrl}" alt="${article.title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"/><div class="modal-img-placeholder" style="display:none;">${getRegionEmoji(article.region)}</div>`
+    : `<div class="modal-img-placeholder">${getRegionEmoji(article.region)}</div>`;
+
+  document.getElementById('modalContent').innerHTML = `
+    ${imgHtml}
+    <div class="modal-body">
+      <div class="modal-meta">
+        <span class="badge badge-${article.importance}">${importanceDot(article.importance)} ${article.importance?.toUpperCase()}</span>
+        <span class="badge badge-region">${article.region}</span>
+        <span class="badge badge-topic">${article.topic}</span>
+      </div>
+      <h2 class="modal-title">${article.title}</h2>
+      <div class="modal-summary">
+        <strong style="color:var(--accent);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;">🤖 AI Summary</strong><br/><br/>
+        ${article.summary || 'No AI summary available for this article.'}
+      </div>
+      <div class="modal-info">
+        <div class="info-item">
+          <div class="info-label">Conflict Score</div>
+          <div class="score-display">
+            <div class="score-circle" style="background:${scoreColor}22;color:${scoreColor};">${score}</div>
+            <span style="font-size:0.8rem;color:var(--muted);">/ 10 severity</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Source</div>
+          <div class="info-value">📡 ${article.source}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Published</div>
+          <div class="info-value" style="font-size:0.85rem;">${new Date(article.publishedAt).toLocaleString()}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Engagement</div>
+          <div class="info-value" style="font-size:0.85rem;">👁️ ${article.views||0} · ❤️ ${article.likes||0} · 🔗 ${article.shares||0}</div>
+        </div>
+      </div>
+      ${article.entities?.length ? `
+      <div class="modal-entities">
+        <div class="sidebar-title" style="margin-bottom:0.5rem;">Entities Mentioned</div>
+        <div class="entities">${article.entities.map(e=>`<span class="entity-tag">${e}</span>`).join('')}</div>
+      </div>` : ''}
+      <div class="modal-actions">
+        <a href="${article.url}" target="_blank" rel="noopener" class="modal-btn modal-btn-primary" onclick="trackShare('${article._id}')">
+          📖 Read Full Article
+        </a>
+        <button class="modal-btn modal-btn-secondary" onclick="shareArticle(null,'${article._id}','${article.title.replace(/'/g,"\\'")}')">
+          🔗 Share
+        </button>
+        <button class="modal-btn modal-btn-secondary" onclick="likeArticle(null,'${article._id}',null)">
+          🤍 Like
+        </button>
+      </div>
+    </div>`;
+
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeModalOnOverlay(e){
+  if(e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+// ── FILTERS ───────────────────────────────────────────
+function toggleFilter(chip) {
+  const type = chip.dataset.type;
+  const value = chip.dataset.value;
+
+  if(filters[type] === value){
+    filters[type] = null;
+    chip.classList.remove('active');
+  } else {
+    document.querySelectorAll(`[data-type="${type}"]`).forEach(c => c.classList.remove('active'));
+    filters[type] = value;
+    chip.classList.add('active');
+  }
+  updateActiveTags();
+  loadArticles(true);
+}
+
+function clearFilters(){
+  filters = { region: null, topic: null, importance: null, search: '' };
+  document.getElementById('searchInput').value = '';
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  updateActiveTags();
+  loadArticles(true);
+}
+
+function updateActiveTags(){
+  const wrap = document.getElementById('activeFilters');
+  wrap.innerHTML = '';
+  ['region','topic','importance'].forEach(type => {
+    if(filters[type]){
+      const tag = document.createElement('div');
+      tag.className = 'active-tag';
+      tag.innerHTML = `${filters[type]} <button onclick="removeFilter('${type}')">✕</button>`;
+      wrap.appendChild(tag);
+    }
+  });
+  if(filters.search){
+    const tag = document.createElement('div');
+    tag.className = 'active-tag';
+    tag.innerHTML = `"${filters.search}" <button onclick="removeFilter('search')">✕</button>`;
+    wrap.appendChild(tag);
+  }
+}
+
+function removeFilter(type){
+  filters[type] = null;
+  if(type === 'search') document.getElementById('searchInput').value = '';
+  document.querySelectorAll(`[data-type="${type}"]`).forEach(c => c.classList.remove('active'));
+  updateActiveTags();
+  loadArticles(true);
+}
+
+// ── ACTIONS ───────────────────────────────────────────
+async function likeArticle(e, id, btn) {
+  if(e) e.stopPropagation();
+  if(likedArticles.includes(id)){ showToast('Already liked!'); return; }
+  try {
+    const res = await fetch(`${API}/api/news/${id}/like`, {method:'POST'});
+    const data = await res.json();
+    likedArticles.push(id);
+    localStorage.setItem('likedArticles', JSON.stringify(likedArticles));
+    if(btn){ btn.classList.add('liked'); btn.innerHTML = `❤️ <span>${data.likes}</span>`; }
+    showToast('❤️ Article liked!');
+  } catch(err){ showToast('Failed to like'); }
+}
+
+async function shareArticle(e, id, title) {
+  if(e) e.stopPropagation();
+  await fetch(`${API}/api/news/${id}/share`, {method:'POST'}).catch(()=>{});
+  const url = `${window.location.origin}/feed.html`;
+  if(navigator.share){
+    navigator.share({ title, text: `Check this out on ConflictPulse: ${title}`, url });
+  } else {
+    navigator.clipboard.writeText(url);
+    showToast('🔗 Link copied!');
+  }
+}
+
+function trackShare(id){
+  fetch(`${API}/api/news/${id}/share`, {method:'POST'}).catch(()=>{});
+}
+
+// ── UI HELPERS ────────────────────────────────────────
+function setView(view){
+  currentView = view;
+  const grid = document.getElementById('articlesGrid');
+  if(view === 'list') grid.classList.add('list-view');
+  else grid.classList.remove('list-view');
+  document.getElementById('gridBtn').classList.toggle('active', view==='grid');
+  document.getElementById('listBtn').classList.toggle('active', view==='list');
+}
+
+function updateCount(total){
+  document.getElementById('resultCount').innerHTML =
+    `<strong>${total.toLocaleString()}</strong> articles found`;
+}
+
+function updateCounts(articles){
+  const counts = {breaking:0, high:0, medium:0, low:0};
+  articles.forEach(a => { if(counts[a.importance] !== undefined) counts[a.importance]++; });
+  Object.keys(counts).forEach(k => {
+    const el = document.getElementById(`cnt-${k}`);
+    if(el && counts[k] > 0) el.textContent = counts[k];
+  });
+}
+
+function showSkeletons(){
+  const grid = document.getElementById('articlesGrid');
+  grid.innerHTML = Array(6).fill(`
+    <div class="skel-card">
+      <div class="skeleton skel-img"></div>
+      <div class="skel-body">
+        <div class="skeleton skel-line shorter"></div>
+        <div class="skeleton skel-line"></div>
+        <div class="skeleton skel-line short"></div>
+        <div class="skeleton skel-line"></div>
+      </div>
+    </div>`).join('');
+}
+
+function showError(){
+  document.getElementById('articlesGrid').innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">⚠️</div>
+      <div class="empty-title">Could not load articles</div>
+      <div class="empty-sub">Backend may be starting up. Try again in 30 seconds.</div>
+      <button onclick="loadArticles(true)" style="margin-top:1rem;padding:0.7rem 1.5rem;background:var(--accent);border:none;color:#fff;border-radius:8px;cursor:pointer;font-weight:600;">Retry</button>
+    </div>`;
+}
+
+function openSidebar(){
+  document.getElementById('sidebar').classList.add('mobile-open');
+  document.getElementById('sidebarOverlay').classList.add('open');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function getTimeAgo(date) {
+  const diff = Date.now() - new Date(date);
+  const mins = Math.floor(diff/60000);
+  const hours = Math.floor(mins/60);
+  const days = Math.floor(hours/24);
+  if(mins < 1) return 'Just now';
+  if(mins < 60) return `${mins}m ago`;
+  if(hours < 24) return `${hours}h ago`;
+  return `${days}d ago`;
+}
+
+function importanceDot(imp){
+  return {breaking:'🔴', high:'🟠', medium:'🔵', low:'⚪'}[imp] || '⚪';
+}
+
+function getRegionEmoji(region){
+  const map = {'Middle East':'🕌','Europe':'🇪🇺','Africa':'🌍','Asia':'🌏',
+    'Americas':'🌎','Global':'🌐','Russia & CIS':'🐻','South Asia':'🇮🇳'};
+  return map[region] || '🌐';
+}
+
+// ── ANALYTICS TRACKING ────────────────────────────────
+function trackVisit(page, articleId = null){
+  const device = window.innerWidth < 768 ? 'mobile' : window.innerWidth < 1024 ? 'tablet' : 'desktop';
+  const referrer = document.referrer ? new URL(document.referrer).hostname : 'direct';
+  fetch(`${API}/api/track`, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ visitorId, page, articleId, device, referrer })
+  }).catch(()=>{});
+}
+</script>
+</body>
+</html>
