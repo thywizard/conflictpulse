@@ -1,0 +1,99 @@
+# ============================================================
+#  ConflictPulse — GitHub Actions
+#  Two jobs in one file:
+#   1. deploy: Auto-deploy client/ to GitHub Pages on push
+#   2. fetch:  Trigger RSS fetch every 10 minutes (keep-alive)
+# ============================================================
+
+name: ConflictPulse CI/CD
+
+on:
+  # Deploy when code is pushed to main
+  push:
+    branches: [main]
+
+  # Fetch news every 10 minutes
+  schedule:
+    - cron: '*/10 * * * *'
+
+  # Allow manual trigger from GitHub Actions tab
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'What to run'
+        required: true
+        default: 'fetch'
+        type: choice
+        options:
+          - fetch
+          - deploy
+          - both
+
+# ============================================================
+jobs:
+
+  # ── JOB 1: DEPLOY TO GITHUB PAGES ──────────────────────
+  deploy:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+
+    # Only deploy on push to main (not on cron)
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && (github.event.inputs.action == 'deploy' || github.event.inputs.action == 'both'))
+
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Deploy client/ to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./client
+          publish_branch: gh-pages
+          commit_message: '🚀 Deploy ConflictPulse frontend'
+          force_orphan: true
+
+      - name: Deployment success
+        run: echo "✅ ConflictPulse deployed to https://thywizard.github.io/conflictpulse"
+
+  # ── JOB 2: TRIGGER RSS FETCH ────────────────────────────
+  fetch:
+    name: Fetch News & Keep Backend Alive
+    runs-on: ubuntu-latest
+
+    # Only fetch on schedule or manual trigger (not on push)
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && (github.event.inputs.action == 'fetch' || github.event.inputs.action == 'both'))
+
+    steps:
+      - name: Ping backend (keep-alive)
+        run: |
+          echo "🏓 Pinging backend to wake it up..."
+          curl -s --max-time 30 ${{ secrets.BACKEND_URL }}/health || echo "Wake-up ping sent"
+          sleep 5
+
+      - name: Trigger RSS Fetch + AI Processing
+        run: |
+          echo "🔄 Triggering RSS fetch..."
+          RESPONSE=$(curl -s --max-time 120 \
+            -X POST "${{ secrets.BACKEND_URL }}/api/fetch-news" \
+            -H "Content-Type: application/json" \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            -d '{"triggeredBy":"github-actions"}')
+
+          echo "Response: $RESPONSE"
+
+          # Check if successful
+          if echo "$RESPONSE" | grep -q '"success":true'; then
+            ADDED=$(echo "$RESPONSE" | grep -o '"added":[0-9]*' | grep -o '[0-9]*')
+            echo "✅ Fetch complete! Added $ADDED new articles."
+          else
+            echo "⚠️ Fetch returned unexpected response"
+          fi
+
+      - name: Log completion
+        run: echo "🕐 Fetch job completed at $(date)"
