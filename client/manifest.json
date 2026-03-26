@@ -1,0 +1,65 @@
+{
+  "name": "ConflictPulse — War & Conflict Intelligence",
+  "short_name": "ConflictPulse",
+  "description": "Real-time war and conflict news aggregator powered by Gemini AI. Breaking news, conflict scores, entity analysis.",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0A0E1A",
+  "theme_color": "#0A0E1A",
+  "lang": "en",
+  "categories": ["news", "politics"],
+
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+
+  "screenshots": [
+    {
+      "src": "icons/screenshot-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "ConflictPulse News Feed"
+    },
+    {
+      "src": "icons/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "ConflictPulse on Mobile"
+    }
+  ],
+
+  "shortcuts": [
+    {
+      "name": "News Feed",
+      "short_name": "Feed",
+      "description": "Open the live news feed",
+      "url": "/feed.html",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Breaking News",
+      "short_name": "Breaking",
+      "description": "View breaking news",
+      "url": "/feed.html?importance=breaking",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+
+  "related_applications": [],
+  "prefer_related_applications": false
+}

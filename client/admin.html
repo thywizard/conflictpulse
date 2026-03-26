@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard — ConflictPulse</title>
+  <link rel="icon" href="icons/icon-192.png"/>
+  <meta name="theme-color" content="#0A0E1A"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    :root{
+      --bg:#0A0E1A; --bg2:#111827; --bg3:#1E2D40;
+      --accent:#FF3B3B; --blue:#3B82F6; --green:#22C55E;
+      --amber:#F59E0B; --purple:#8B5CF6;
+      --text:#F0F4F8; --muted:#94A3B8; --border:#1E293B;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;display:flex;}
+
+    /* SIDEBAR NAV */
+    .sidebar-nav{width:240px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;bottom:0;left:0;z-index:50;transition:transform 0.3s;}
+    .sidebar-logo{padding:1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.6rem;}
+    .logo-pulse{width:9px;height:9px;background:var(--accent);border-radius:50%;animation:pulse 1.5s infinite;}
+    .logo-text{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;}
+    .logo-text span{color:var(--accent);}
+    .logo-badge{font-size:0.65rem;background:rgba(255,59,59,0.15);color:var(--accent);padding:0.1rem 0.5rem;border-radius:99px;border:1px solid rgba(255,59,59,0.3);font-weight:700;margin-left:auto;}
+    .nav-section{padding:1rem 0.75rem 0.5rem;font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);}
+    .nav-item{display:flex;align-items:center;gap:0.7rem;padding:0.65rem 0.9rem;margin:0.15rem 0.5rem;border-radius:8px;cursor:pointer;color:var(--muted);font-size:0.875rem;font-weight:500;transition:all 0.15s;border:none;background:none;width:calc(100% - 1rem);text-align:left;font-family:'Inter',sans-serif;}
+    .nav-item:hover{background:var(--bg3);color:var(--text);}
+    .nav-item.active{background:rgba(255,59,59,0.1);color:var(--text);border:1px solid rgba(255,59,59,0.2);}
+    .nav-item .nav-icon{font-size:1rem;width:20px;text-align:center;}
+    .nav-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:0.65rem;font-weight:700;padding:0.1rem 0.5rem;border-radius:99px;}
+    .sidebar-bottom{margin-top:auto;padding:1rem;border-top:1px solid var(--border);}
+    .admin-info{display:flex;align-items:center;gap:0.7rem;margin-bottom:0.8rem;}
+    .admin-avatar{width:34px;height:34px;background:rgba(255,59,59,0.1);border:1px solid rgba(255,59,59,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.9rem;}
+    .admin-name{font-size:0.82rem;font-weight:600;}
+    .admin-role{font-size:0.7rem;color:var(--accent);}
+    .logout-btn{width:100%;padding:0.6rem;background:rgba(255,59,59,0.08);border:1px solid rgba(255,59,59,0.2);color:var(--accent);border-radius:8px;cursor:pointer;font-size:0.82rem;font-weight:600;font-family:'Inter',sans-serif;transition:all 0.2s;}
+    .logout-btn:hover{background:rgba(255,59,59,0.15);}
+
+    /* MAIN */
+    .main-content{margin-left:240px;flex:1;display:flex;flex-direction:column;min-height:100vh;}
+
+    /* TOP BAR */
+    .topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+    .topbar-title{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;}
+    .topbar-right{display:flex;align-items:center;gap:1rem;}
+    .fetch-btn{display:flex;align-items:center;gap:0.5rem;background:var(--accent);color:#fff;border:none;padding:0.55rem 1.1rem;border-radius:8px;font-size:0.85rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;}
+    .fetch-btn:hover:not(:disabled){background:#cc2f2f;}
+    .fetch-btn:disabled{opacity:0.6;cursor:not-allowed;}
+    .view-site-btn{display:flex;align-items:center;gap:0.4rem;color:var(--muted);text-decoration:none;font-size:0.82rem;font-weight:500;padding:0.5rem 0.9rem;border:1px solid var(--border);border-radius:8px;transition:all 0.2s;}
+    .view-site-btn:hover{color:var(--text);border-color:var(--muted);}
+    .hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:5px;background:none;border:none;}
+    .hamburger span{width:20px;height:2px;background:var(--text);border-radius:2px;}
+
+    /* PAGE CONTENT */
+    .page-content{padding:1.5rem;flex:1;}
+    .tab-pane{display:none;}
+    .tab-pane.active{display:block;}
+
+    /* STAT CARDS */
+    .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem;}
+    .stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.2rem;position:relative;overflow:hidden;transition:transform 0.2s;}
+    .stat-card:hover{transform:translateY(-2px);}
+    .stat-card::after{content:'';position:absolute;top:0;right:0;bottom:0;width:3px;border-radius:0 12px 12px 0;}
+    .stat-card.red::after{background:var(--accent);}
+    .stat-card.blue::after{background:var(--blue);}
+    .stat-card.green::after{background:var(--green);}
+    .stat-card.amber::after{background:var(--amber);}
+    .stat-card.purple::after{background:var(--purple);}
+    .stat-icon{font-size:1.5rem;margin-bottom:0.7rem;}
+    .stat-num{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:800;line-height:1;}
+    .stat-label{font-size:0.75rem;color:var(--muted);margin-top:0.3rem;font-weight:500;}
+    .stat-change{font-size:0.72rem;margin-top:0.4rem;font-weight:600;}
+    .stat-change.up{color:var(--green);}
+    .stat-change.down{color:var(--accent);}
+
+    /* CHARTS ROW */
+    .charts-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1.5rem;}
+    .chart-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.2rem;}
+    .chart-title{font-size:0.82rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:1rem;}
+    .chart-wrap{position:relative;height:180px;}
+
+    /* TOP CONTENT TABLES */
+    .top-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;}
+    .top-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.2rem;}
+    .top-card-title{font-size:0.82rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:1rem;}
+    .top-item{display:flex;align-items:center;gap:0.8rem;padding:0.6rem 0;border-bottom:1px solid var(--border);}
+    .top-item:last-child{border-bottom:none;}
+    .top-rank{font-family:'Space Grotesk',sans-serif;font-size:0.85rem;font-weight:700;color:var(--muted);width:20px;}
+    .top-info{flex:1;min-width:0;}
+    .top-title{font-size:0.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .top-meta{font-size:0.7rem;color:var(--muted);}
+    .top-stat{font-size:0.82rem;font-weight:700;color:var(--accent);white-space:nowrap;}
+
+    /* FETCH LOGS */
+    .fetch-logs{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.2rem;margin-bottom:1.5rem;}
+    .log-item{display:flex;align-items:center;gap:1rem;padding:0.7rem 0;border-bottom:1px solid var(--border);font-size:0.82rem;}
+    .log-item:last-child{border-bottom:none;}
+    .log-status{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+    .log-status.success{background:var(--green);}
+    .log-status.failed{background:var(--accent);}
+    .log-status.partial{background:var(--amber);}
+    .log-info{flex:1;}
+    .log-time{color:var(--muted);}
+    .log-stats{color:var(--muted);font-size:0.75rem;}
+
+    /* ARTICLES TABLE */
+    .table-controls{display:flex;gap:0.8rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center;}
+    .table-search{flex:1;min-width:200px;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:0.6rem 0.9rem;border-radius:8px;font-size:0.875rem;outline:none;font-family:'Inter',sans-serif;}
+    .table-search:focus{border-color:rgba(255,59,59,0.4);}
+    .table-search::placeholder{color:var(--muted);}
+    .table-select{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:0.6rem 0.8rem;border-radius:8px;font-size:0.82rem;outline:none;cursor:pointer;font-family:'Inter',sans-serif;}
+    .add-btn{display:flex;align-items:center;gap:0.4rem;background:var(--green);color:#fff;border:none;padding:0.6rem 1.1rem;border-radius:8px;font-size:0.85rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.2s;white-space:nowrap;}
+    .add-btn:hover{background:#16a34a;}
+
+    .table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border);}
+    table{width:100%;border-collapse:collapse;font-size:0.82rem;}
+    thead{background:var(--bg3);}
+    th{padding:0.8rem 1rem;text-align:left;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);white-space:nowrap;}
+    td{padding:0.8rem 1rem;border-bottom:1px solid var(--border);vertical-align:middle;}
+    tr:last-child td{border-bottom:none;}
+    tr:hover td{background:rgba(255,255,255,0.02);}
+    .table-img{width:40px;height:40px;object-fit:cover;border-radius:6px;background:var(--bg3);}
+    .table-img-placeholder{width:40px;height:40px;border-radius:6px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:1.2rem;}
+    .article-title-cell{max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;}
+    .badge{display:inline-flex;align-items:center;padding:0.15rem 0.55rem;border-radius:99px;font-size:0.68rem;font-weight:700;text-transform:uppercase;}
+    .badge-breaking{background:rgba(255,59,59,0.15);color:var(--accent);}
+    .badge-high{background:rgba(245,158,11,0.15);color:var(--amber);}
+    .badge-medium{background:rgba(59,130,246,0.15);color:var(--blue);}
+    .badge-low{background:rgba(148,163,184,0.1);color:var(--muted);}
+    .action-btns{display:flex;gap:0.4rem;}
+    .tbl-btn{padding:0.3rem 0.6rem;border-radius:6px;font-size:0.75rem;font-weight:600;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:all 0.15s;}
+    .tbl-btn-edit{background:rgba(59,130,246,0.1);color:var(--blue);}
+    .tbl-btn-edit:hover{background:rgba(59,130,246,0.2);}
+    .tbl-btn-delete{background:rgba(255,59,59,0.1);color:var(--accent);}
+    .tbl-btn-delete:hover{background:rgba(255,59,59,0.2);}
+    .tbl-btn-breaking{background:rgba(245,158,11,0.1);color:var(--amber);}
+    .tbl-btn-breaking:hover{background:rgba(245,158,11,0.2);}
+    .table-pagination{display:flex;align-items:center;justify-content:space-between;margin-top:1rem;padding:0.8rem 0;font-size:0.82rem;color:var(--muted);}
+    .page-btns{display:flex;gap:0.4rem;}
+    .page-btn{padding:0.4rem 0.8rem;background:var(--bg2);border:1px solid var(--border);color:var(--muted);border-radius:6px;cursor:pointer;font-size:0.8rem;transition:all 0.15s;}
+    .page-btn:hover{border-color:var(--muted);color:var(--text);}
+    .page-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+    .page-btn:disabled{opacity:0.4;cursor:not-allowed;}
+
+    /* MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+    .modal-overlay.open{opacity:1;pointer-events:all;}
+    .modal{background:var(--bg2);border:1px solid var(--border);border-radius:16px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;position:relative;}
+    .modal::-webkit-scrollbar{width:4px;}
+    .modal::-webkit-scrollbar-thumb{background:var(--border);}
+    .modal-header{padding:1.2rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg2);z-index:1;}
+    .modal-title{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;}
+    .modal-close{background:var(--bg3);border:none;color:var(--text);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;}
+    .modal-body{padding:1.5rem;}
+    .modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.8rem;}
+
+    /* FORM */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+    .form-group{margin-bottom:1rem;}
+    .form-group.full{grid-column:1/-1;}
+    .form-label{display:block;font-size:0.75rem;font-weight:600;color:var(--muted);margin-bottom:0.4rem;text-transform:uppercase;letter-spacing:0.06em;}
+    .form-input,.form-select,.form-textarea{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:0.7rem 0.9rem;border-radius:8px;font-size:0.875rem;outline:none;transition:border-color 0.2s;font-family:'Inter',sans-serif;}
+    .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:rgba(255,59,59,0.4);}
+    .form-input::placeholder,.form-textarea::placeholder{color:var(--muted);}
+    .form-textarea{resize:vertical;min-height:90px;}
+    .form-select option{background:var(--bg2);}
+
+    /* IMAGE UPLOAD */
+    .upload-area{border:2px dashed var(--border);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;}
+    .upload-area:hover{border-color:var(--accent);background:rgba(255,59,59,0.03);}
+    .upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer;}
+    .upload-icon{font-size:2rem;margin-bottom:0.5rem;}
+    .upload-text{font-size:0.82rem;color:var(--muted);}
+    .upload-preview{width:100%;height:140px;object-fit:cover;border-radius:8px;margin-top:0.8rem;display:none;}
+
+    /* MODAL BTNS */
+    .btn-save{background:var(--accent);color:#fff;border:none;padding:0.7rem 1.5rem;border-radius:8px;font-size:0.875rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.2s;}
+    .btn-save:hover{background:#cc2f2f;}
+    .btn-cancel{background:var(--bg3);color:var(--text);border:1px solid var(--border);padding:0.7rem 1.5rem;border-radius:8px;font-size:0.875rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;}
+    .btn-cancel:hover{border-color:var(--muted);}
+
+    /* CONFIRM MODAL */
+    .confirm-body{padding:1.5rem;text-align:center;}
+    .confirm-icon{font-size:3rem;margin-bottom:1rem;}
+    .confirm-title{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:0.5rem;}
+    .confirm-text{color:var(--muted);font-size:0.875rem;margin-bottom:1.5rem;}
+    .btn-danger{background:var(--accent);color:#fff;border:none;padding:0.7rem 1.5rem;border-radius:8px;font-size:0.875rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:0.8rem 1.2rem;border-radius:8px;font-size:0.85rem;font-weight:500;z-index:300;transform:translateY(80px);opacity:0;transition:all 0.3s;max-width:300px;box-shadow:0 8px 24px rgba(0,0,0,0.3);}
+    .toast.show{transform:translateY(0);opacity:1;}
+    .toast.success{border-color:rgba(34,197,94,0.4);}
+    .toast.error{border-color:rgba(255,59,59,0.4);}
+
+    /* SPINNER */
+    .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block;}
+
+    /* EMPTY */
+    .empty-row td{text-align:center;padding:3rem;color:var(--muted);}
+
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(1.4);}}
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    @media(max-width:1024px){.charts-row{grid-template-columns:1fr 1fr;}.top-row{grid-template-columns:1fr;}}
+    @media(max-width:768px){
+      .sidebar-nav{transform:translateX(-100%);}
+      .sidebar-nav.open{transform:translateX(0);}
+      .main-content{margin-left:0;}
+      .hamburger{display:flex;}
+      .charts-row{grid-template-columns:1fr;}
+      .form-grid{grid-template-columns:1fr;}
+    }
+    @media(max-width:500px){.stats-row{grid-template-columns:1fr 1fr;}}
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar-nav" id="sidebarNav">
+  <div class="sidebar-logo">
+    <div class="logo-pulse"></div>
+    <div class="logo-text">Conflict<span>Pulse</span></div>
+    <span class="logo-badge">ADMIN</span>
+  </div>
+
+  <div class="nav-section">Main</div>
+  <button class="nav-item active" onclick="switchTab('overview',this)">
+    <span class="nav-icon">📊</span> Overview
+  </button>
+  <button class="nav-item" onclick="switchTab('analytics',this)">
+    <span class="nav-icon">📈</span> Analytics
+  </button>
+
+  <div class="nav-section">Content</div>
+  <button class="nav-item" onclick="switchTab('articles',this)" id="navArticles">
+    <span class="nav-icon">📰</span> Articles
+    <span class="nav-badge" id="articlesBadge">—</span>
+  </button>
+  <button class="nav-item" onclick="openAddModal()">
+    <span class="nav-icon">➕</span> Add Article
+  </button>
+
+  <div class="nav-section">System</div>
+  <button class="nav-item" onclick="switchTab('fetchlogs',this)">
+    <span class="nav-icon">🔄</span> RSS Fetch Logs
+  </button>
+  <button class="nav-item" onclick="triggerFetch()" id="navFetchBtn">
+    <span class="nav-icon">⚡</span> Trigger Fetch
+  </button>
+
+  <div class="sidebar-bottom">
+    <div class="admin-info">
+      <div class="admin-avatar">👤</div>
+      <div>
+        <div class="admin-name" id="adminEmailDisplay">Admin</div>
+        <div class="admin-role">Administrator</div>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-content">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <button class="hamburger" onclick="toggleSidebar()">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="topbar-title" id="topbarTitle">Overview</div>
+    </div>
+    <div class="topbar-right">
+      <button class="fetch-btn" id="fetchBtn" onclick="triggerFetch()">
+        ⚡ Fetch News
+      </button>
+      <a href="feed.html" target="_blank" class="view-site-btn">🌐 View Site</a>
+    </div>
+  </div>
+
+  <!-- PAGE CONTENT -->
+  <div class="page-content">
+
+    <!-- ── OVERVIEW TAB ── -->
+    <div class="tab-pane active" id="tab-overview">
+
+      <!-- STAT CARDS -->
+      <div class="stats-row">
+        <div class="stat-card red">
+          <div class="stat-icon">📰</div>
+          <div class="stat-num" id="ov-total">—</div>
+          <div class="stat-label">Total Articles</div>
+          <div class="stat-change up" id="ov-today">— today</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-icon">🔴</div>
+          <div class="stat-num" id="ov-breaking">—</div>
+          <div class="stat-label">Breaking Now</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-icon">👁️</div>
+          <div class="stat-num" id="ov-visits-today">—</div>
+          <div class="stat-label">Visits Today</div>
+          <div class="stat-change up" id="ov-unique">— unique</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon">👥</div>
+          <div class="stat-num" id="ov-unique-total">—</div>
+          <div class="stat-label">Total Visitors</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-icon">📅</div>
+          <div class="stat-num" id="ov-week">—</div>
+          <div class="stat-label">This Week</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-num" id="ov-score">—</div>
+          <div class="stat-label">Avg Conflict Score</div>
+        </div>
+      </div>
+
+      <!-- CHARTS -->
+      <div class="charts-row">
+        <div class="chart-card">
+          <div class="chart-title">Articles by Region</div>
+          <div class="chart-wrap"><canvas id="regionChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Articles by Topic</div>
+          <div class="chart-wrap"><canvas id="topicChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Importance Distribution</div>
+          <div class="chart-wrap"><canvas id="importanceChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- TOP CONTENT -->
+      <div class="top-row">
+        <div class="top-card">
+          <div class="top-card-title">🔥 Most Viewed Articles</div>
+          <div id="topViewed">Loading...</div>
+        </div>
+        <div class="top-card">
+          <div class="top-card-title">❤️ Most Liked Articles</div>
+          <div id="topLiked">Loading...</div>
+        </div>
+      </div>
+
+      <!-- DEVICE & REFERRER -->
+      <div class="charts-row" style="grid-template-columns:1fr 1fr;">
+        <div class="chart-card">
+          <div class="chart-title">Traffic by Device</div>
+          <div class="chart-wrap"><canvas id="deviceChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Top Traffic Sources</div>
+          <div id="referrerList" style="margin-top:0.5rem;"></div>
+        </div>
+      </div>
+
+      <!-- RECENT FETCH -->
+      <div class="fetch-logs">
+        <div class="chart-title" style="margin-bottom:0.8rem;">🔄 Recent RSS Fetches</div>
+        <div id="recentFetches">Loading...</div>
+      </div>
+    </div>
+
+    <!-- ── ANALYTICS TAB ── -->
+    <div class="tab-pane" id="tab-analytics">
+      <div class="stats-row">
+        <div class="stat-card blue">
+          <div class="stat-icon">📊</div>
+          <div class="stat-num" id="an-total-visits">—</div>
+          <div class="stat-label">Total Page Views</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon">👤</div>
+          <div class="stat-num" id="an-unique">—</div>
+          <div class="stat-label">Unique Visitors</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-icon">📅</div>
+          <div class="stat-num" id="an-week">—</div>
+          <div class="stat-label">Visits This Week</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-icon">📱</div>
+          <div class="stat-num" id="an-mobile">—</div>
+          <div class="stat-label">Mobile Visits</div>
+        </div>
+      </div>
+      <div class="charts-row" style="grid-template-columns:1fr 1fr;">
+        <div class="chart-card">
+          <div class="chart-title">Device Breakdown</div>
+          <div class="chart-wrap"><canvas id="deviceChart2"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Top 5 Shared Articles</div>
+          <div id="topShared" style="margin-top:0.5rem;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ARTICLES TAB ── -->
+    <div class="tab-pane" id="tab-articles">
+      <div class="table-controls">
+        <input type="text" class="table-search" id="tableSearch" placeholder="🔍 Search articles..." oninput="searchArticles(this.value)"/>
+        <select class="table-select" onchange="filterTable('region',this.value)">
+          <option value="">All Regions</option>
+          <option>Middle East</option><option>Europe</option>
+          <option>Russia & CIS</option><option>Africa</option>
+          <option>Asia</option><option>South Asia</option>
+          <option>Americas</option><option>Global</option>
+        </select>
+        <select class="table-select" onchange="filterTable('importance',this.value)">
+          <option value="">All Importance</option>
+          <option>breaking</option><option>high</option>
+          <option>medium</option><option>low</option>
+        </select>
+        <button class="add-btn" onclick="openAddModal()">➕ Add Article</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Title</th>
+              <th>Source</th>
+              <th>Region</th>
+              <th>Importance</th>
+              <th>Score</th>
+              <th>Views</th>
+              <th>Breaking</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="articlesTableBody">
+            <tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--muted);">Loading articles...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-pagination">
+        <span id="tableInfo">—</span>
+        <div class="page-btns" id="pageBtns"></div>
+      </div>
+    </div>
+
+    <!-- ── FETCH LOGS TAB ── -->
+    <div class="tab-pane" id="tab-fetchlogs">
+      <div class="fetch-logs" style="margin-bottom:0;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+          <div class="chart-title" style="margin:0;">🔄 RSS Fetch History</div>
+          <button class="fetch-btn" onclick="triggerFetch()">⚡ Trigger Fetch Now</button>
+        </div>
+        <div id="fullFetchLogs">Loading...</div>
+      </div>
+    </div>
+
+  </div><!-- end page-content -->
+</div><!-- end main-content -->
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-overlay" id="articleModal" onclick="closeModalOnOverlay(event,'articleModal')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Add Article</div>
+      <button class="modal-close" onclick="closeModal('articleModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editId"/>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label class="form-label">Title *</label>
+          <input type="text" class="form-input" id="fTitle" placeholder="Article headline..."/>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">AI Summary</label>
+          <textarea class="form-textarea" id="fSummary" placeholder="2-3 sentence summary..."></textarea>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Original Article URL *</label>
+          <input type="url" class="form-input" id="fUrl" placeholder="https://..."/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Source</label>
+          <input type="text" class="form-input" id="fSource" placeholder="BBC, Reuters..."/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Region</label>
+          <select class="form-select" id="fRegion">
+            <option>Middle East</option><option>Europe</option>
+            <option>Russia & CIS</option><option>Africa</option>
+            <option>Asia</option><option>South Asia</option>
+            <option>Americas</option><option>Global</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Topic</label>
+          <select class="form-select" id="fTopic">
+            <option>Airstrikes</option><option>Ground Combat</option>
+            <option>Ceasefire</option><option>Sanctions</option>
+            <option>Diplomacy</option><option>Casualties</option>
+            <option>Weapons</option><option>Protests</option>
+            <option>War Crimes</option><option>Nuclear</option>
+            <option>Cyber</option><option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Importance</label>
+          <select class="form-select" id="fImportance">
+            <option value="breaking">🔴 Breaking</option>
+            <option value="high">🟠 High</option>
+            <option value="medium" selected>🔵 Medium</option>
+            <option value="low">⚪ Low</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Conflict Score (1–10)</label>
+          <input type="number" class="form-input" id="fScore" min="1" max="10" value="5"/>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Entities (comma separated)</label>
+          <input type="text" class="form-input" id="fEntities" placeholder="Russia, Ukraine, NATO..."/>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Article Image</label>
+          <div class="upload-area" id="uploadArea">
+            <input type="file" id="imageFile" accept="image/*" onchange="previewImage(this)"/>
+            <div class="upload-icon">🖼️</div>
+            <div class="upload-text">Click or drag to upload image<br/><small style="color:var(--muted);">JPG, PNG, WEBP — uploads to Cloudinary</small></div>
+            <img class="upload-preview" id="imagePreview" alt="preview"/>
+          </div>
+          <input type="text" class="form-input" id="fImageUrl" placeholder="Or paste image URL directly..." style="margin-top:0.5rem;"/>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('articleModal')">Cancel</button>
+      <button class="btn-save" id="saveBtn" onclick="saveArticle()">💾 Save Article</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE MODAL -->
+<div class="modal-overlay" id="confirmModal" onclick="closeModalOnOverlay(event,'confirmModal')">
+  <div class="modal" style="max-width:400px;">
+    <div class="confirm-body">
+      <div class="confirm-icon">🗑️</div>
+      <div class="confirm-title">Delete Article?</div>
+      <div class="confirm-text" id="confirmText">This action cannot be undone.</div>
+      <div style="display:flex;gap:0.8rem;justify-content:center;">
+        <button class="btn-cancel" onclick="closeModal('confirmModal')">Cancel</button>
+        <button class="btn-danger" id="confirmDeleteBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'https://conflictpulse-api.onrender.com';
+let token = localStorage.getItem('adminToken');
+let statsData = null;
+let articlesPage = 1, articleFilters = {};
+let charts = {};
+
+// ── AUTH CHECK ────────────────────────────────────────
+if(!token){ window.location.href = 'admin-login.html'; }
+document.getElementById('adminEmailDisplay').textContent =
+  localStorage.getItem('adminEmail') || 'Admin';
+
+// ── INIT ──────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  loadStats();
+});
+
+function authHeaders(){
+  return { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
+}
+
+// ── TABS ──────────────────────────────────────────────
+function switchTab(tab, btn){
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  if(btn) btn.classList.add('active');
+  document.getElementById('topbarTitle').textContent =
+    {overview:'Overview',analytics:'Analytics',articles:'Articles',fetchlogs:'RSS Fetch Logs'}[tab];
+
+  if(tab === 'articles') loadArticlesTable();
+  if(tab === 'fetchlogs') loadFetchLogs();
+  if(tab === 'analytics') renderAnalyticsTab();
+  closeSidebarMobile();
+}
+
+function toggleSidebar(){
+  document.getElementById('sidebarNav').classList.toggle('open');
+}
+function closeSidebarMobile(){
+  if(window.innerWidth <= 768)
+    document.getElementById('sidebarNav').classList.remove('open');
+}
+
+// ── LOAD STATS ────────────────────────────────────────
+async function loadStats(){
+  try {
+    const res = await fetch(`${API}/api/admin/stats`, { headers: authHeaders() });
+    if(res.status === 401){ logout(); return; }
+    const data = await res.json();
+    statsData = data;
+    renderOverview(data);
+  } catch(e){
+    showToast('⚠️ Failed to load stats', 'error');
+  }
+}
+
+function renderOverview(d){
+  // Stat cards
+  document.getElementById('ov-total').textContent       = (d.articles?.total || 0).toLocaleString();
+  document.getElementById('ov-breaking').textContent    = d.articles?.breaking || 0;
+  document.getElementById('ov-today').textContent       = `+${d.articles?.today || 0} today`;
+  document.getElementById('ov-visits-today').textContent = (d.traffic?.todayVisits || 0).toLocaleString();
+  document.getElementById('ov-unique').textContent      = `${d.traffic?.uniqueToday || 0} unique`;
+  document.getElementById('ov-unique-total').textContent = (d.traffic?.uniqueTotal || 0).toLocaleString();
+  document.getElementById('ov-week').textContent        = (d.articles?.thisWeek || 0).toLocaleString();
+  document.getElementById('ov-score').textContent       = d.articles?.avgConflictScore || '—';
+  document.getElementById('articlesBadge').textContent  = d.articles?.total || 0;
+
+  // Charts
+  renderChart('regionChart', 'doughnut',
+    d.articles?.byRegion?.map(r => r._id),
+    d.articles?.byRegion?.map(r => r.count),
+    ['#FF3B3B','#3B82F6','#22C55E','#F59E0B','#8B5CF6','#EC4899','#14B8A6','#F97316']
+  );
+  renderChart('topicChart', 'bar',
+    d.articles?.byTopic?.map(t => t._id?.substring(0,10)),
+    d.articles?.byTopic?.map(t => t.count),
+    '#3B82F6'
+  );
+  renderChart('importanceChart', 'doughnut',
+    d.articles?.byImportance?.map(i => i._id),
+    d.articles?.byImportance?.map(i => i.count),
+    ['#FF3B3B','#F59E0B','#3B82F6','#94A3B8']
+  );
+  renderChart('deviceChart', 'doughnut',
+    d.traffic?.deviceBreakdown?.map(i => i._id),
+    d.traffic?.deviceBreakdown?.map(i => i.count),
+    ['#3B82F6','#FF3B3B','#22C55E']
+  );
+
+  // Top viewed
+  const tvEl = document.getElementById('topViewed');
+  tvEl.innerHTML = (d.topContent?.topViewed || []).slice(0,5).map((a,i) => `
+    <div class="top-item">
+      <span class="top-rank">#${i+1}</span>
+      <div class="top-info"><div class="top-title">${a.title}</div><div class="top-meta">${a.source} · ${a.region}</div></div>
+      <span class="top-stat">👁️ ${(a.views||0).toLocaleString()}</span>
+    </div>`).join('') || '<div style="color:var(--muted);font-size:0.85rem;">No data yet</div>';
+
+  // Top liked
+  const tlEl = document.getElementById('topLiked');
+  tlEl.innerHTML = (d.topContent?.topLiked || []).slice(0,5).map((a,i) => `
+    <div class="top-item">
+      <span class="top-rank">#${i+1}</span>
+      <div class="top-info"><div class="top-title">${a.title}</div><div class="top-meta">${a.source} · ${a.region}</div></div>
+      <span class="top-stat">❤️ ${(a.likes||0).toLocaleString()}</span>
+    </div>`).join('') || '<div style="color:var(--muted);font-size:0.85rem;">No data yet</div>';
+
+  // Referrers
+  const refEl = document.getElementById('referrerList');
+  refEl.innerHTML = (d.traffic?.referrerBreakdown || []).map(r => `
+    <div class="top-item">
+      <div class="top-info"><div class="top-title">${r._id || 'direct'}</div></div>
+      <span class="top-stat">${r.count}</span>
+    </div>`).join('') || '<div style="color:var(--muted);font-size:0.85rem;">No data yet</div>';
+
+  // Fetch logs
+  renderFetchLogs(d.fetchHistory || [], 'recentFetches');
+}
+
+function renderAnalyticsTab(){
+  if(!statsData) return;
+  const d = statsData;
+  document.getElementById('an-total-visits').textContent = (d.traffic?.totalVisits||0).toLocaleString();
+  document.getElementById('an-unique').textContent = (d.traffic?.uniqueTotal||0).toLocaleString();
+  document.getElementById('an-week').textContent = (d.traffic?.weekVisits||0).toLocaleString();
+
+  const mobile = d.traffic?.deviceBreakdown?.find(x=>x._id==='mobile')?.count || 0;
+  document.getElementById('an-mobile').textContent = mobile.toLocaleString();
+
+  renderChart('deviceChart2','doughnut',
+    d.traffic?.deviceBreakdown?.map(i=>i._id),
+    d.traffic?.deviceBreakdown?.map(i=>i.count),
+    ['#3B82F6','#FF3B3B','#22C55E']
+  );
+
+  const tsEl = document.getElementById('topShared');
+  tsEl.innerHTML = (d.topContent?.topShared||[]).slice(0,5).map((a,i)=>`
+    <div class="top-item">
+      <span class="top-rank">#${i+1}</span>
+      <div class="top-info"><div class="top-title">${a.title}</div><div class="top-meta">${a.source}</div></div>
+      <span class="top-stat">🔗 ${a.shares||0}</span>
+    </div>`).join('') || '<div style="color:var(--muted);font-size:0.85rem;">No data yet</div>';
+}
+
+// ── CHARTS ────────────────────────────────────────────
+function renderChart(id, type, labels, data, colors){
+  if(charts[id]) charts[id].destroy();
+  const ctx = document.getElementById(id)?.getContext('2d');
+  if(!ctx || !labels?.length) return;
+
+  const isDoughnut = type === 'doughnut';
+  charts[id] = new Chart(ctx, {
+    type,
+    data: {
+      labels,
+      datasets:[{
+        data,
+        backgroundColor: Array.isArray(colors) ? colors : `${colors}33`,
+        borderColor: Array.isArray(colors) ? colors.map(c=>`${c}88`) : colors,
+        borderWidth: isDoughnut ? 2 : 1,
+        borderRadius: isDoughnut ? 0 : 4,
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ display:isDoughnut, position:'bottom',
+        labels:{ color:'#94A3B8', font:{size:10}, boxWidth:10, padding:8 }}},
+      scales: isDoughnut ? {} : {
+        x:{ ticks:{color:'#94A3B8',font:{size:9}}, grid:{color:'#1E293B'} },
+        y:{ ticks:{color:'#94A3B8',font:{size:9}}, grid:{color:'#1E293B'} }
+      }
+    }
+  });
+}
+
+// ── ARTICLES TABLE ────────────────────────────────────
+async function loadArticlesTable(page=1){
+  articlesPage = page;
+  try {
+    const params = new URLSearchParams({ page, limit:20, ...articleFilters });
+    const res = await fetch(`${API}/api/admin/articles?${params}`, { headers: authHeaders() });
+    const data = await res.json();
+    renderArticlesTable(data.articles||[], data.total||0, data.pages||1, page);
+  } catch(e){ showToast('Failed to load articles','error'); }
+}
+
+function renderArticlesTable(articles, total, pages, currentPage){
+  const tbody = document.getElementById('articlesTableBody');
+  if(!articles.length){
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="9">📭 No articles found</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = articles.map(a => `
+    <tr>
+      <td>${a.imageUrl
+        ? `<img class="table-img" src="${a.imageUrl}" onerror="this.style.display='none'">`
+        : `<div class="table-img-placeholder">${getRegionEmoji(a.region)}</div>`}</td>
+      <td><div class="article-title-cell" title="${a.title}">${a.title}</div></td>
+      <td style="color:var(--muted);font-size:0.78rem;">${a.source}</td>
+      <td style="font-size:0.78rem;">${a.region}</td>
+      <td><span class="badge badge-${a.importance}">${a.importance}</span></td>
+      <td style="font-weight:700;color:${a.conflictScore>=7?'var(--accent)':a.conflictScore>=4?'var(--amber)':'var(--green)'}">${a.conflictScore}/10</td>
+      <td style="color:var(--muted);">👁️ ${(a.views||0).toLocaleString()}</td>
+      <td>${a.isBreaking ? '🔴 Yes' : '—'}</td>
+      <td>
+        <div class="action-btns">
+          <button class="tbl-btn tbl-btn-edit" onclick="openEditModal(${JSON.stringify(a).replace(/"/g,'&quot;')})">✏️</button>
+          <button class="tbl-btn tbl-btn-breaking" onclick="toggleBreaking('${a._id}',this)" title="${a.isBreaking?'Unpin':'Pin as breaking'}">📌</button>
+          <button class="tbl-btn tbl-btn-delete" onclick="confirmDelete('${a._id}','${a.title.replace(/'/g,"\\'")}')">🗑️</button>
+        </div>
+      </td>
+    </tr>`).join('');
+
+  document.getElementById('tableInfo').textContent =
+    `Showing ${articles.length} of ${total} articles`;
+
+  const pgBtns = document.getElementById('pageBtns');
+  pgBtns.innerHTML = '';
+  const prev = document.createElement('button');
+  prev.className = 'page-btn';
+  prev.textContent = '← Prev';
+  prev.disabled = currentPage <= 1;
+  prev.onclick = () => loadArticlesTable(currentPage - 1);
+  pgBtns.appendChild(prev);
+
+  for(let i = Math.max(1,currentPage-1); i <= Math.min(pages,currentPage+1); i++){
+    const btn = document.createElement('button');
+    btn.className = `page-btn${i===currentPage?' active':''}`;
+    btn.textContent = i;
+    btn.onclick = () => loadArticlesTable(i);
+    pgBtns.appendChild(btn);
+  }
+
+  const next = document.createElement('button');
+  next.className = 'page-btn';
+  next.textContent = 'Next →';
+  next.disabled = currentPage >= pages;
+  next.onclick = () => loadArticlesTable(currentPage + 1);
+  pgBtns.appendChild(next);
+}
+
+function filterTable(key, value){
+  if(value) articleFilters[key] = value;
+  else delete articleFilters[key];
+  loadArticlesTable(1);
+}
+
+let searchTimer;
+function searchArticles(val){
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    if(val) articleFilters.search = val;
+    else delete articleFilters.search;
+    loadArticlesTable(1);
+  }, 400);
+}
+
+// ── FETCH LOGS ────────────────────────────────────────
+async function loadFetchLogs(){
+  try {
+    const res = await fetch(`${API}/api/admin/fetch-logs`, { headers: authHeaders() });
+    const data = await res.json();
+    renderFetchLogs(data.logs||[], 'fullFetchLogs');
+  } catch(e){ showToast('Failed to load logs','error'); }
+}
+
+function renderFetchLogs(logs, containerId){
+  const el = document.getElementById(containerId);
+  if(!logs.length){ el.innerHTML = `<div style="color:var(--muted);font-size:0.85rem;padding:1rem 0;">No fetch history yet. Trigger a fetch to get started.</div>`; return; }
+  el.innerHTML = logs.map(l => `
+    <div class="log-item">
+      <div class="log-status ${l.status}"></div>
+      <div class="log-info">
+        <div style="font-weight:600;">+${l.articlesAdded} added  ·  ${l.articlesFound} found  ·  ${l.duplicates} dupes</div>
+        <div class="log-stats">by ${l.triggeredBy} · ${Math.round(l.duration/1000)}s · ${l.status}</div>
+      </div>
+      <div class="log-time">${getTimeAgo(l.createdAt)}</div>
+    </div>`).join('');
+}
+
+// ── TRIGGER FETCH ─────────────────────────────────────
+async function triggerFetch(){
+  const btn = document.getElementById('fetchBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Fetching...';
+  showToast('⚡ RSS fetch triggered...','success');
+
+  try {
+    const res = await fetch(`${API}/api/admin/fetch`, { method:'POST', headers: authHeaders() });
+    const data = await res.json();
+    showToast(`✅ Done! +${data.added} new articles added.`,'success');
+    loadStats();
+  } catch(e){
+    showToast('❌ Fetch failed. Check backend.','error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '⚡ Fetch News';
+  }
+}
+
+// ── ADD / EDIT MODAL ──────────────────────────────────
+function openAddModal(){
+  document.getElementById('modalTitle').textContent = '➕ Add Article';
+  document.getElementById('editId').value = '';
+  document.getElementById('fTitle').value = '';
+  document.getElementById('fSummary').value = '';
+  document.getElementById('fUrl').value = '';
+  document.getElementById('fSource').value = '';
+  document.getElementById('fEntities').value = '';
+  document.getElementById('fScore').value = 5;
+  document.getElementById('fImportance').value = 'medium';
+  document.getElementById('fImageUrl').value = '';
+  document.getElementById('imagePreview').style.display = 'none';
+  document.getElementById('articleModal').classList.add('open');
+  closeSidebarMobile();
+}
+
+function openEditModal(article){
+  document.getElementById('modalTitle').textContent = '✏️ Edit Article';
+  document.getElementById('editId').value = article._id;
+  document.getElementById('fTitle').value = article.title || '';
+  document.getElementById('fSummary').value = article.summary || '';
+  document.getElementById('fUrl').value = article.url || '';
+  document.getElementById('fSource').value = article.source || '';
+  document.getElementById('fRegion').value = article.region || 'Global';
+  document.getElementById('fTopic').value = article.topic || 'Other';
+  document.getElementById('fImportance').value = article.importance || 'medium';
+  document.getElementById('fScore').value = article.conflictScore || 5;
+  document.getElementById('fEntities').value = (article.entities||[]).join(', ');
+  document.getElementById('fImageUrl').value = article.imageUrl || '';
+  const preview = document.getElementById('imagePreview');
+  if(article.imageUrl){ preview.src = article.imageUrl; preview.style.display = 'block'; }
+  else { preview.style.display = 'none'; }
+  document.getElementById('articleModal').classList.add('open');
+}
+
+async function saveArticle(){
+  const id      = document.getElementById('editId').value;
+  const title   = document.getElementById('fTitle').value.trim();
+  const url     = document.getElementById('fUrl').value.trim();
+  if(!title || !url){ showToast('Title and URL are required','error'); return; }
+
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div>';
+
+  // Upload image if file selected
+  let imageUrl = document.getElementById('fImageUrl').value.trim();
+  const fileInput = document.getElementById('imageFile');
+  if(fileInput.files[0]){
+    const formData = new FormData();
+    formData.append('image', fileInput.files[0]);
+    try {
+      const upRes = await fetch(`${API}/api/admin/upload`, {
+        method:'POST',
+        headers:{ 'Authorization': `Bearer ${token}` },
+        body: formData
+      });
+      const upData = await upRes.json();
+      if(upData.imageUrl) imageUrl = upData.imageUrl;
+    } catch(e){ showToast('Image upload failed','error'); }
+  }
+
+  const body = {
+    title, url, imageUrl,
+    summary:    document.getElementById('fSummary').value.trim(),
+    source:     document.getElementById('fSource').value.trim(),
+    region:     document.getElementById('fRegion').value,
+    topic:      document.getElementById('fTopic').value,
+    importance: document.getElementById('fImportance').value,
+    conflictScore: parseInt(document.getElementById('fScore').value)||5,
+    isBreaking: document.getElementById('fImportance').value === 'breaking',
+    entities:   document.getElementById('fEntities').value.split(',').map(e=>e.trim()).filter(Boolean),
+  };
+
+  try {
+    const endpoint = id
+      ? `${API}/api/admin/articles/${id}`
+      : `${API}/api/admin/articles`;
+    const method = id ? 'PUT' : 'POST';
+    const res = await fetch(endpoint, { method, headers: authHeaders(), body: JSON.stringify(body) });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error);
+
+    showToast(id ? '✅ Article updated!' : '✅ Article created!','success');
+    closeModal('articleModal');
+    loadStats();
+    if(document.getElementById('tab-articles').classList.contains('active'))
+      loadArticlesTable();
+  } catch(e){
+    showToast(`❌ ${e.message}`,'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '💾 Save Article';
+  }
+}
+
+// ── DELETE ────────────────────────────────────────────
+function confirmDelete(id, title){
+  document.getElementById('confirmText').textContent = `Delete "${title.substring(0,50)}..."?`;
+  document.getElementById('confirmDeleteBtn').onclick = () => deleteArticle(id);
+  document.getElementById('confirmModal').classList.add('open');
+}
+
+async function deleteArticle(id){
+  try {
+    await fetch(`${API}/api/admin/articles/${id}`, { method:'DELETE', headers: authHeaders() });
+    showToast('🗑️ Article deleted','success');
+    closeModal('confirmModal');
+    loadArticlesTable(articlesPage);
+    loadStats();
+  } catch(e){ showToast('Delete failed','error'); }
+}
+
+// ── BREAKING TOGGLE ───────────────────────────────────
+async function toggleBreaking(id, btn){
+  try {
+    const res = await fetch(`${API}/api/admin/articles/${id}/breaking`, { method:'PUT', headers: authHeaders() });
+    const data = await res.json();
+    showToast(data.isBreaking ? '🔴 Pinned as Breaking!' : '📌 Unpinned', 'success');
+    loadArticlesTable(articlesPage);
+  } catch(e){ showToast('Failed','error'); }
+}
+
+// ── IMAGE PREVIEW ─────────────────────────────────────
+function previewImage(input){
+  if(!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const preview = document.getElementById('imagePreview');
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+// ── MODAL HELPERS ─────────────────────────────────────
+function closeModal(id){
+  document.getElementById(id).classList.remove('open');
+}
+function closeModalOnOverlay(e, id){
+  if(e.target === document.getElementById(id)) closeModal(id);
+}
+
+// ── HELPERS ───────────────────────────────────────────
+function logout(){
+  localStorage.removeItem('adminToken');
+  localStorage.removeItem('adminEmail');
+  window.location.href = 'admin-login.html';
+}
+
+function showToast(msg, type='success'){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function getTimeAgo(date){
+  const diff = Date.now() - new Date(date);
+  const mins = Math.floor(diff/60000);
+  const hours = Math.floor(mins/60);
+  const days = Math.floor(hours/24);
+  if(mins < 1) return 'Just now';
+  if(mins < 60) return `${mins}m ago`;
+  if(hours < 24) return `${hours}h ago`;
+  return `${days}d ago`;
+}
+
+function getRegionEmoji(r){
+  return {'Middle East':'🕌','Europe':'🇪🇺','Africa':'🌍','Asia':'🌏',
+    'Americas':'🌎','Global':'🌐','Russia & CIS':'🐻','South Asia':'🇮🇳'}[r]||'🌐';
+}
+</script>
+</body>
+</html>
