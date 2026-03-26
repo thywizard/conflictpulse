@@ -708,4 +708,11 @@ app.listen(PORT, () => {
   console.log(`🚀 ConflictPulse server running on port ${PORT}`);
   console.log(`📊 Admin at: /api/admin/*`);
   console.log(`📰 News at:  /api/news`);
-});
+
+console.log("Fetching news...");
+console.log(news);
+console.log("AI response:", aiContent);
+  mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB Connected ✅"))
+  .catch(err => console.log(err));
+  });
