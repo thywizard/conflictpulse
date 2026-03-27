@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login — ConflictPulse</title>
+  <link rel="icon" href="icons/icon-192.png"/>
+  <meta name="theme-color" content="#0A0E1A"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap"/>
+  <style>
+    :root{
+      --bg:#0A0E1A; --bg2:#111827; --bg3:#1E2D40;
+      --accent:#FF3B3B; --text:#F0F4F8;
+      --muted:#94A3B8; --border:#1E293B; --green:#22C55E;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;position:relative;overflow:hidden;}
+
+    /* BG */
+    .bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;}
+    .bg-glow{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(255,59,59,0.07) 0%,transparent 65%);pointer-events:none;}
+
+    /* CARD */
+    .login-card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:2.5rem;width:100%;max-width:420px;position:relative;z-index:1;box-shadow:0 25px 60px rgba(0,0,0,0.5);}
+    .login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);border-radius:20px 20px 0 0;}
+
+    /* LOGO */
+    .login-logo{display:flex;align-items:center;justify-content:center;gap:0.6rem;margin-bottom:0.5rem;}
+    .logo-pulse{width:10px;height:10px;background:var(--accent);border-radius:50%;animation:pulse 1.5s infinite;}
+    .logo-text{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;}
+    .logo-text span{color:var(--accent);}
+    .login-subtitle{text-align:center;color:var(--muted);font-size:0.85rem;margin-bottom:2rem;}
+    .admin-badge{display:inline-flex;align-items:center;gap:0.4rem;background:rgba(255,59,59,0.1);border:1px solid rgba(255,59,59,0.25);color:var(--accent);padding:0.25rem 0.8rem;border-radius:99px;font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:2rem;margin-left:auto;margin-right:auto;display:flex;width:fit-content;}
+
+    /* FORM */
+    .form-group{margin-bottom:1.2rem;}
+    .form-label{display:block;font-size:0.8rem;font-weight:600;color:var(--muted);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.06em;}
+    .form-input{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:0.85rem 1rem;border-radius:10px;font-size:0.95rem;outline:none;transition:all 0.2s;font-family:'Inter',sans-serif;}
+    .form-input:focus{border-color:rgba(255,59,59,0.5);box-shadow:0 0 0 3px rgba(255,59,59,0.08);}
+    .form-input::placeholder{color:var(--muted);}
+    .input-wrap{position:relative;}
+    .input-icon{position:absolute;left:0.9rem;top:50%;transform:translateY(-50%);font-size:1rem;pointer-events:none;}
+    .input-wrap .form-input{padding-left:2.6rem;}
+    .password-toggle{position:absolute;right:0.9rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.9rem;padding:0.2rem;}
+    .password-toggle:hover{color:var(--text);}
+
+    /* LOGIN BTN */
+    .login-btn{width:100%;background:var(--accent);color:#fff;border:none;padding:0.95rem;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;margin-top:0.5rem;display:flex;align-items:center;justify-content:center;gap:0.5rem;box-shadow:0 0 20px rgba(255,59,59,0.25);}
+    .login-btn:hover:not(:disabled){background:#cc2f2f;box-shadow:0 0 30px rgba(255,59,59,0.4);transform:translateY(-1px);}
+    .login-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+
+    /* ERROR / SUCCESS */
+    .alert{padding:0.85rem 1rem;border-radius:8px;font-size:0.875rem;margin-bottom:1.2rem;display:none;align-items:center;gap:0.5rem;}
+    .alert.show{display:flex;}
+    .alert-error{background:rgba(255,59,59,0.1);border:1px solid rgba(255,59,59,0.3);color:#ff8080;}
+    .alert-success{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:var(--green);}
+
+    /* SPINNER */
+    .spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0;}
+
+    /* SECURITY NOTE */
+    .security-note{display:flex;align-items:center;gap:0.5rem;margin-top:1.5rem;padding:0.8rem;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;font-size:0.78rem;color:var(--muted);}
+
+    /* BACK LINK */
+    .back-link{display:block;text-align:center;margin-top:1.5rem;color:var(--muted);font-size:0.85rem;text-decoration:none;transition:color 0.2s;}
+    .back-link:hover{color:var(--text);}
+
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(1.4);}}
+    @keyframes spin{to{transform:rotate(360deg);}}
+  </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<div class="login-card">
+  <!-- Logo -->
+  <div class="login-logo">
+    <div class="logo-pulse"></div>
+    <div class="logo-text">Conflict<span>Pulse</span></div>
+  </div>
+  <div class="login-subtitle">Command Center Access</div>
+
+  <div class="admin-badge">🔐 Admin Only</div>
+
+  <!-- Alert -->
+  <div class="alert alert-error" id="alertError">
+    <span>⚠️</span><span id="errorMsg">Invalid credentials</span>
+  </div>
+  <div class="alert alert-success" id="alertSuccess">
+    <span>✅</span><span>Login successful. Redirecting...</span>
+  </div>
+
+  <!-- Form -->
+  <div class="form-group">
+    <label class="form-label">Email Address</label>
+    <div class="input-wrap">
+      <span class="input-icon">✉️</span>
+      <input type="email" class="form-input" id="emailInput"
+             placeholder="admin@conflictpulse.com"
+             autocomplete="email"/>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Password</label>
+    <div class="input-wrap">
+      <span class="input-icon">🔑</span>
+      <input type="password" class="form-input" id="passwordInput"
+             placeholder="••••••••••••"
+             autocomplete="current-password"/>
+      <button class="password-toggle" onclick="togglePassword()" id="toggleBtn">👁️</button>
+    </div>
+  </div>
+
+  <button class="login-btn" id="loginBtn" onclick="handleLogin()">
+    <span id="btnText">Access Dashboard</span>
+  </button>
+
+  <div class="security-note">
+    🛡️ This area is restricted to authorized administrators only. All access attempts are logged.
+  </div>
+
+  <a href="index.html" class="back-link">← Return to ConflictPulse</a>
+</div>
+
+<script>
+  const API = 'https://conflictpulse-api.onrender.com';
+
+  // Redirect if already logged in
+  if(localStorage.getItem('adminToken')){
+    window.location.href = 'admin.html';
+  }
+
+  // Enter key support
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Enter') handleLogin();
+  });
+
+  async function handleLogin(){
+    const email    = document.getElementById('emailInput').value.trim();
+    const password = document.getElementById('passwordInput').value;
+    const btn      = document.getElementById('loginBtn');
+    const btnText  = document.getElementById('btnText');
+
+    // Hide alerts
+    document.getElementById('alertError').classList.remove('show');
+    document.getElementById('alertSuccess').classList.remove('show');
+
+    // Validate
+    if(!email || !password){
+      showError('Please enter your email and password.');
+      return;
+    }
+    if(!email.includes('@')){
+      showError('Please enter a valid email address.');
+      return;
+    }
+
+    // Loading state
+    btn.disabled = true;
+    btnText.innerHTML = '<div class="spinner"></div> Authenticating...';
+
+    try {
+      const res = await fetch(`${API}/api/admin/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+
+      if(!res.ok || !data.token){
+        showError(data.error || 'Invalid credentials. Access denied.');
+        return;
+      }
+
+      // Save token
+      localStorage.setItem('adminToken', data.token);
+      localStorage.setItem('adminEmail', email);
+
+      // Success state
+      document.getElementById('alertSuccess').classList.add('show');
+      btnText.innerHTML = '✅ Access Granted';
+
+      setTimeout(() => { window.location.href = 'admin.html'; }, 1200);
+
+    } catch(e){
+      showError('Cannot connect to server. Is the backend running?');
+    } finally {
+      if(!localStorage.getItem('adminToken')){
+        btn.disabled = false;
+        btnText.textContent = 'Access Dashboard';
+      }
+    }
+  }
+
+  function showError(msg){
+    document.getElementById('errorMsg').textContent = msg;
+    document.getElementById('alertError').classList.add('show');
+    document.getElementById('loginBtn').disabled = false;
+    document.getElementById('btnText').textContent = 'Access Dashboard';
+  }
+
+  function togglePassword(){
+    const inp = document.getElementById('passwordInput');
+    const btn = document.getElementById('toggleBtn');
+    if(inp.type === 'password'){
+      inp.type = 'text';
+      btn.textContent = '🙈';
+    } else {
+      inp.type = 'password';
+      btn.textContent = '👁️';
+    }
+  }
+</script>
+</body>
+</html>
