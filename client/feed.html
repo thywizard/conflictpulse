@@ -657,7 +657,7 @@ async function likeArticle(e, id, btn) {
 async function shareArticle(e, id, title) {
   if(e) e.stopPropagation();
   await fetch(`${API}/api/news/${id}/share`, {method:'POST'}).catch(()=>{});
- const url = window.location.href;
+ const url = `https://thywizard.github.io/conflictpulse/article.html?id=${id}`;
   if(navigator.share){
     navigator.share({ title, text: `Check this out on ConflictPulse: ${title}`, url });
   } else {
