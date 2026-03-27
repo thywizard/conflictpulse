@@ -176,29 +176,61 @@ const cronProtect = (req, res, next) => {
 // ============================================================
 async function processWithGemini(articles) {
   if (!articles.length) return [];
+const prompt = `You are an expert war and conflict news analyst with deep knowledge of geopolitics.
 
-  const prompt = `You are a war and conflict news analyst. 
-Process ALL the articles below and return ONLY a valid JSON array. No markdown, no explanation, just raw JSON.
+Analyze each article below and return ONLY a valid JSON array. No markdown, no explanation, no backticks. Raw JSON only.
 
-For each article return an object with these exact fields:
+For each  return:
 {
   "index": <number>,
-  "summary": "<2-3 sentence factual summary of the conflict event>",
-  "region": "<one of: Middle East|Europe|Africa|Asia|Americas|Global|Russia & CIS|South Asia>",
-  "topic": "<one of: Airstrikes|Ground Combat|Ceasefire|Sanctions|Diplomacy|Casualties|Weapons|Protests|War Crimes|Nuclear|Cyber|Other>",
-  "importance": "<one of: breaking|high|medium|low>",
-  "conflictScore": <integer 1-10 where 10 is catastrophic>,
-  "entities": ["array", "of", "named", "countries", "groups", "people"],
-  "isDuplicate": <true or false>,
-  "isConflictRelated": <true or false>
+  "summary": "<2-3 sentence factual summary focusing on WHO did WHAT, WHERE, and the impact>",
+  "region": "<pick the MOST SPECIFIC match: Middle East|Europe|Africa|Asia|Americas|Global|Russia & CIS|South Asia>",
+  "topic": "<pick the PRIMARY topic: Airstrikes|Ground Combat|Ceasefire|Sanctions|Diplomacy|Casualties|Weapons|Protests|War Crimes|Nuclear|Cyber|Other>",
+  "importance": "<breaking|high|medium|low>",
+  "conflictScore": <1-10>,
+  "entities": ["country/group/person names mentioned"],
+  "isDuplicate": <true|false>,
+  "isConflictRelated": <true|false>
 }
 
-Rules:
-- Only mark isConflictRelated=true for war, military, conflict, terrorism, sanctions, or geopolitical tension news
-- Mark isDuplicate=true only if two articles in this batch describe the exact same event
-- conflictScore 1-3=minor tension, 4-6=active conflict, 7-9=major war event, 10=mass casualty/nuclear
+REGION RULES — be specific, not lazy:
+- Any news about Iraq, Syria, Israel, Gaza, Lebanon, Yemen, Iran = "Middle East"
+- Russia, Ukraine, Belarus, Moldova = "Russia & CIS"  
+- India, Pakistan, Afghanistan, Bangladesh = "South Asia"
+- China, Japan, Korea, Southeast Asia = "Asia"
+- Any African country = "Africa"
+- US, Canada, Latin America = "Americas"
+- Only use "Global" if it genuinely involves 3+ continents
 
-Articles to process:
+TOPIC RULES — pick the dominant action:
+- Bombs, missiles, drone strikes = "Airstrikes"
+- Troops, tanks, invasions = "Ground Combat"  
+- Death tolls, injury counts = "Casualties"
+- Peace talks, negotiations = "Diplomacy"
+- Trade restrictions, asset freezes = "Sanctions"
+- Weapons deals, arms transfers = "Weapons"
+- Civilian protests, riots = "Protests"
+- Torture, civilian targeting = "War Crimes"
+- Nuclear weapons/threats = "Nuclear"
+- Hacking, cyber attacks = "Cyber"
+- Ceasefire agreements = "Ceasefire"
+
+IMPORTANCE RULES:
+- breaking: active ongoing attack, mass casualty event RIGHT NOW
+- high: major development in an active war zone
+- medium: diplomatic development, sanctions, regional tension
+- low: background analysis, historical context
+
+CONFLICT SCORE:
+- 1-3: political tension, sanctions, diplomacy
+- 4-6: active skirmishes, ongoing conflict
+- 7-9: major war event, large casualties
+- 10: nuclear/WMD use, mass atrocity
+
+isConflictRelated = true for: war, military ops, terrorism, sanctions, geopolitical crisis
+isConflictRelated = false for: sports, entertainment, weather, economics unrelated to conflict
+
+Articles:
 ${JSON.stringify(articles.map((a, i) => ({
   index: i,
   title: a.title || "",
