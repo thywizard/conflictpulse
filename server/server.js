@@ -28,7 +28,7 @@ const PORT = process.env.PORT || 5000;
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(morgan("dev"));
 app.use(cors({
-  origin: ["http://localhost:3000", "https://conflictpulse.github.io",
+  origin: ["http://localhost:3000",  "https://thywizard.github.io",
            process.env.FRONTEND_URL || "*"],
   credentials: true
 }));
