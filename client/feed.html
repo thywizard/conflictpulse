@@ -451,7 +451,8 @@ function loadMore(){ loadArticles(false); }
 function createCard(article) {
   const el = document.createElement('div');
   el.className = 'article-card';
-  el.onclick = () => openModal(article);
+  el.onclick = () => window.location.href = 
+  `https://thywizard.github.io/conflictpulse/article.html?id=${article._id}`;
 
   const score = article.conflictScore || 5;
   const scoreColor = score >= 8 ? '#FF3B3B' : score >= 5 ? '#F59E0B' : '#22C55E';
