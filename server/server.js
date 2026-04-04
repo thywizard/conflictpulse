@@ -245,6 +245,18 @@ ${JSON.stringify(articles.map((a, i) => ({
   title: a.title || "",
   content: `${a.title}. ${(a.contentSnippet || a.content || "").substring(0, 800)}`
 })))}`;
+   try {
+    const result = await geminiModel.generateContent(prompt);
+    const text = result.response.text().trim();
+    // Strip markdown fences if present
+    const clean = text.replace(/```json|```/g, "").trim();
+    return JSON.parse(clean);
+  } catch (err) {
+    console.error("Gemini processing error:", err.message);
+    return [];
+  }
+}
+
 
 // ============================================================
 //  RSS FETCH SERVICE
