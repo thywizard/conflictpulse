@@ -174,13 +174,16 @@ const cronProtect = (req, res, next) => {
 // ============================================================
 //  GEMINI AI SERVICE
 // ============================================================
+
+// ============================================================
 async function processWithGemini(articles) {
   if (!articles.length) return [];
+
 const prompt = `You are an expert war and conflict news analyst with deep knowledge of geopolitics.
 
 Analyze each article below and return ONLY a valid JSON array. No markdown, no explanation, no backticks. Raw JSON only.
 
-For each  return:
+For each return:
 {
   "index": <number>,
   "summary": "<2-3 sentence factual summary focusing on WHO did WHAT, WHERE, and the impact>",
@@ -230,24 +233,18 @@ CONFLICT SCORE:
 isConflictRelated = true for: war, military ops, terrorism, sanctions, geopolitical crisis
 isConflictRelated = false for: sports, entertainment, weather, economics unrelated to conflict
 
+IMPORTANT: Use the article TITLE as the primary classification signal.
+The title alone contains enough to determine region and topic.
+NEVER default to "Global", "Other", or "medium" without a clear specific reason.
+If the title mentions a country or region — use it. If it mentions an attack — it is Airstrikes or Ground Combat, not Other.
+
 Articles:
 ${JSON.stringify(articles.map((a, i) => ({
   index: i,
+  source: a.source || "",
   title: a.title || "",
-  content: (a.contentSnippet || a.content || a.title || "").substring(0, 500)
+  content: `${a.title}. ${(a.contentSnippet || a.content || "").substring(0, 800)}`
 })))}`;
-
-  try {
-    const result = await geminiModel.generateContent(prompt);
-    const text = result.response.text().trim();
-    // Strip markdown fences if present
-    const clean = text.replace(/```json|```/g, "").trim();
-    return JSON.parse(clean);
-  } catch (err) {
-    console.error("Gemini processing error:", err.message);
-    return [];
-  }
-}
 
 // ============================================================
 //  RSS FETCH SERVICE
