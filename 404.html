@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8026135429131617"
+     crossorigin="anonymous"></script>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>404 — Page Not Found | ConflictPulse</title>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="icon" href="icons/icon-192.png"/>
+  <meta name="theme-color" content="#0A0E1A"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap"/>
+  <style>
+    :root{
+      --bg:#0A0E1A; --bg2:#111827; --bg3:#1E2D40;
+      --accent:#FF3B3B; --text:#F0F4F8;
+      --muted:#94A3B8; --border:#1E293B;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;overflow:hidden;position:relative;}
+
+    /* ANIMATED BACKGROUND */
+    .bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0;}
+    .bg-glow{position:fixed;inset:0;background:radial-gradient(ellipse at center,rgba(255,59,59,0.06) 0%,transparent 70%);pointer-events:none;z-index:0;}
+
+    /* CONTENT */
+    .content{position:relative;z-index:1;max-width:600px;}
+
+    /* 404 NUMBER */
+    .error-num{font-family:'Space Grotesk',sans-serif;font-size:clamp(6rem,20vw,12rem);font-weight:800;line-height:1;color:transparent;background:linear-gradient(135deg,var(--accent),rgba(255,59,59,0.3));-webkit-background-clip:text;background-clip:text;letter-spacing:-0.05em;position:relative;}
+    .error-num::after{content:'404';position:absolute;inset:0;-webkit-text-stroke:1px rgba(255,59,59,0.2);color:transparent;font-size:inherit;font-weight:inherit;letter-spacing:inherit;z-index:-1;filter:blur(20px);}
+
+    /* STATUS BADGE */
+    .status-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(255,59,59,0.1);border:1px solid rgba(255,59,59,0.3);color:var(--accent);padding:0.4rem 1rem;border-radius:99px;font-size:0.78rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:1.5rem;}
+    .pulse-dot{width:7px;height:7px;background:var(--accent);border-radius:50%;animation:pulse 1s infinite;}
+
+    /* TEXT */
+    .error-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.4rem,4vw,2rem);font-weight:700;margin-bottom:1rem;letter-spacing:-0.02em;}
+    .error-sub{color:var(--muted);font-size:1rem;line-height:1.7;margin-bottom:2.5rem;max-width:400px;margin-left:auto;margin-right:auto;}
+
+    /* TYPEWRITER */
+    .typewriter{font-family:monospace;font-size:0.85rem;color:var(--accent);background:rgba(255,59,59,0.05);border:1px solid rgba(255,59,59,0.15);padding:0.8rem 1.2rem;border-radius:8px;margin-bottom:2.5rem;min-height:3rem;display:flex;align-items:center;justify-content:center;}
+    .cursor{display:inline-block;width:2px;height:1em;background:var(--accent);margin-left:2px;animation:blink-cursor 0.8s infinite;}
+
+    /* BUTTONS */
+    .buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
+    .btn-primary{display:inline-flex;align-items:center;gap:0.5rem;background:var(--accent);color:#fff;padding:0.8rem 1.8rem;border-radius:8px;font-weight:700;font-size:0.95rem;text-decoration:none;transition:all 0.2s;box-shadow:0 0 20px rgba(255,59,59,0.3);}
+    .btn-primary:hover{background:#cc2f2f;transform:translateY(-2px);}
+    .btn-secondary{display:inline-flex;align-items:center;gap:0.5rem;background:transparent;color:var(--text);padding:0.8rem 1.8rem;border-radius:8px;font-weight:600;font-size:0.95rem;text-decoration:none;border:1px solid var(--border);transition:all 0.2s;}
+    .btn-secondary:hover{border-color:var(--muted);background:rgba(255,255,255,0.05);}
+
+    /* SIGNAL LOST ANIMATION */
+    .signal{font-size:4rem;margin-bottom:1rem;animation:signal 2s ease-in-out infinite;}
+
+    /* PARTICLES */
+    .particles{position:fixed;inset:0;pointer-events:none;z-index:0;}
+    .particle{position:absolute;width:2px;height:2px;background:rgba(255,59,59,0.4);border-radius:50%;animation:float linear infinite;}
+
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(1.4);}}
+    @keyframes blink-cursor{0%,100%{opacity:1;}50%{opacity:0;}}
+    @keyframes signal{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(0.95);}}
+    @keyframes float{0%{transform:translateY(100vh) translateX(0);opacity:0;}10%{opacity:1;}90%{opacity:1;}100%{transform:translateY(-100px) translateX(50px);opacity:0;}}
+  </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<!-- Floating particles -->
+<div class="particles" id="particles"></div>
+
+<div class="content">
+  <div class="signal">📡</div>
+
+  <div class="status-badge">
+    <div class="pulse-dot"></div>
+    SIGNAL LOST
+  </div>
+
+  <div class="error-num">404</div>
+
+  <h1 class="error-title">Mission Intel Not Found</h1>
+
+  <p class="error-sub">
+    The page you're looking for has gone dark. 
+    It may have been moved, deleted, or never existed. 
+    Return to base and try again.
+  </p>
+
+  <div class="typewriter">
+    <span id="typeText"></span>
+    <span class="cursor"></span>
+  </div>
+
+  <div class="buttons">
+    <a href="index.html" class="btn-primary">🏠 Return to Base</a>
+    <a href="feed.html" class="btn-secondary">📰 View Feed</a>
+  </div>
+</div>
+
+<script>
+  // Typewriter effect
+  const messages = [
+    '> ERROR: Target page not found in database...',
+    '> SCANNING: All sectors searched. No signal.',
+    '> STATUS: Intel lost. Coordinates unknown.',
+    '> RETRY: Redirecting to command center...',
+  ];
+  let msgIndex = 0, charIndex = 0, isDeleting = false;
+  const el = document.getElementById('typeText');
+
+  function type(){
+    const msg = messages[msgIndex];
+    if(!isDeleting){
+      el.textContent = msg.substring(0, charIndex++);
+      if(charIndex > msg.length){ isDeleting = true; setTimeout(type, 2000); return; }
+    } else {
+      el.textContent = msg.substring(0, charIndex--);
+      if(charIndex < 0){
+        isDeleting = false;
+        msgIndex = (msgIndex + 1) % messages.length;
+        setTimeout(type, 400);
+        return;
+      }
+    }
+    setTimeout(type, isDeleting ? 30 : 60);
+  }
+  type();
+
+  // Generate particles
+  const container = document.getElementById('particles');
+  for(let i = 0; i < 20; i++){
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `
+      left:${Math.random()*100}%;
+      animation-duration:${8 + Math.random()*10}s;
+      animation-delay:${Math.random()*5}s;
+      opacity:${0.2 + Math.random()*0.5};
+    `;
+    container.appendChild(p);
+  }
+</script>
+</body>
+</html>
