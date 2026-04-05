@@ -27,9 +27,12 @@ const PORT = process.env.PORT || 5000;
 // ============================================================
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(morgan("dev"));
+// REPLACE WITH THIS:
 app.use(cors({
-  origin: ["http://localhost:3000",  "https://thywizard.github.io",
-           process.env.FRONTEND_URL || "*"],
+  origin: function(origin, callback) {
+    // Allow all origins
+    callback(null, true);
+  },
   credentials: true
 }));
 app.use(express.json({ limit: "10mb" }));
