@@ -7,13 +7,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ConflictPulse — Real-Time War & Conflict Intelligence</title>
   <meta name="description" content="AI-powered war and conflict news aggregator. Real-time updates from 8 global sources, summarized and categorized by Gemini AI."/>
+  <meta name="google-adsense-account" content="ca-pub-8026135429131617">
   <link rel="manifest" href="manifest.json"/>
   <link rel="icon" href="icons/icon-192.png"/>
   <meta name="theme-color" content="#0A0E1A"/>
   <!-- Open Graph -->
-  <meta property="og:title" content="ConflictPulse"/>
-  <meta property="og:description" content="Real-time war & conflict intelligence powered by AI"/>
+  <meta property="og:title" content="ConflictPulse — Real-Time War Intelligence"/>
+  <meta property="og:description" content="AI-powered war & conflict intelligence. Updated every 10 minutes."/>
   <meta property="og:image" content="icons/icon-512.png"/>
+  <meta property="og:type" content="website"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap"/>
   <style>
@@ -35,7 +37,7 @@
     body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden;}
 
     /* NAV */
-    nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(20px);background:rgba(10,14,26,0.85);border-bottom:1px solid rgba(255,59,59,0.1);}
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(20px);background:rgba(10,14,26,0.88);border-bottom:1px solid rgba(255,59,59,0.1);transition:background 0.3s;}
     .logo{display:flex;align-items:center;gap:0.6rem;text-decoration:none;}
     .logo-pulse{width:10px;height:10px;background:var(--accent);border-radius:50%;animation:pulse 1.5s infinite;}
     .logo-text{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;color:var(--text);}
@@ -43,47 +45,62 @@
     .nav-links{display:flex;align-items:center;gap:1.5rem;}
     .nav-links a{color:var(--muted);text-decoration:none;font-size:0.9rem;font-weight:500;transition:color 0.2s;}
     .nav-links a:hover{color:var(--text);}
-    .nav-cta{background:var(--accent);color:#fff!important;padding:0.5rem 1.2rem;border-radius:6px;font-weight:600!important;transition:background 0.2s!important;}
-    .nav-cta:hover{background:#cc2f2f!important;}
-    .nav-live{display:flex;align-items:center;gap:0.4rem;color:var(--accent);font-size:0.8rem;font-weight:600;}
+    .nav-cta{background:var(--accent)!important;color:#fff!important;padding:0.5rem 1.2rem!important;border-radius:7px;font-weight:700!important;transition:all 0.2s!important;box-shadow:0 0 20px rgba(255,59,59,0.25);}
+    .nav-cta:hover{background:#cc2f2f!important;box-shadow:0 0 30px rgba(255,59,59,0.45)!important;transform:translateY(-1px);}
+    .nav-live{display:flex;align-items:center;gap:0.4rem;color:var(--accent);font-size:0.78rem;font-weight:700;}
     .live-dot{width:8px;height:8px;background:var(--accent);border-radius:50%;animation:pulse 1s infinite;}
+    .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:5px;}
+    .hamburger span{width:22px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s;}
+    .mobile-menu{display:none;position:fixed;top:60px;left:0;right:0;background:var(--bg2);border-bottom:1px solid var(--border);padding:1.5rem;z-index:99;flex-direction:column;gap:1rem;}
+    .mobile-menu.open{display:flex;}
+    .mobile-menu a{color:var(--muted);text-decoration:none;font-size:1rem;font-weight:500;padding:0.5rem 0;border-bottom:1px solid var(--border);transition:color 0.2s;}
+    .mobile-menu a:hover{color:var(--text);}
+
+    /* TICKER */
+    .ticker{background:var(--accent);padding:0.55rem 0;overflow:hidden;white-space:nowrap;margin-top:60px;}
+    .ticker-inner{display:inline-flex;gap:3rem;animation:ticker 30s linear infinite;}
+    .ticker-inner:hover{animation-play-state:paused;}
+    .ticker-item{font-size:0.78rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:0.5rem;}
+    .ticker-dot{width:5px;height:5px;background:#fff;border-radius:50%;opacity:0.7;}
 
     /* HERO */
     .hero{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:6rem 2rem 4rem;}
     .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(255,59,59,0.08) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(59,130,246,0.06) 0%,transparent 50%);pointer-events:none;}
-    .grid-overlay{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;}
+    .grid-overlay{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.018) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;}
     .hero-content{max-width:900px;text-align:center;position:relative;z-index:1;}
-    .hero-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(255,59,59,0.1);border:1px solid rgba(255,59,59,0.3);color:var(--accent);padding:0.4rem 1rem;border-radius:99px;font-size:0.8rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:2rem;}
+    .hero-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(255,59,59,0.1);border:1px solid rgba(255,59,59,0.3);color:var(--accent);padding:0.4rem 1rem;border-radius:99px;font-size:0.78rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:2rem;}
     .hero-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.5rem,7vw,5.5rem);font-weight:700;line-height:1.05;margin-bottom:1.5rem;letter-spacing:-0.02em;}
     .hero-title .highlight{color:var(--accent);position:relative;}
     .hero-title .highlight::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:3px;background:var(--accent);border-radius:2px;}
-    .hero-sub{font-size:clamp(1rem,2.5vw,1.2rem);color:var(--muted);max-width:600px;margin:0 auto 3rem;line-height:1.7;}
+    .hero-sub{font-size:clamp(1rem,2.5vw,1.2rem);color:var(--muted);max-width:600px;margin:0 auto 3rem;line-height:1.75;}
     .hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:4rem;}
-    .btn-primary{display:inline-flex;align-items:center;gap:0.5rem;background:var(--accent);color:#fff;padding:0.9rem 2rem;border-radius:8px;font-weight:700;font-size:1rem;text-decoration:none;transition:all 0.2s;box-shadow:0 0 30px rgba(255,59,59,0.3);}
+    .btn-primary{display:inline-flex;align-items:center;gap:0.5rem;background:var(--accent);color:#fff;padding:0.9rem 2rem;border-radius:9px;font-weight:700;font-size:1rem;text-decoration:none;transition:all 0.22s;box-shadow:0 0 30px rgba(255,59,59,0.3);}
     .btn-primary:hover{background:#cc2f2f;transform:translateY(-2px);box-shadow:0 0 40px rgba(255,59,59,0.5);}
-    .btn-secondary{display:inline-flex;align-items:center;gap:0.5rem;background:transparent;color:var(--text);padding:0.9rem 2rem;border-radius:8px;font-weight:600;font-size:1rem;text-decoration:none;border:1px solid var(--border);transition:all 0.2s;}
+    .btn-secondary{display:inline-flex;align-items:center;gap:0.5rem;background:transparent;color:var(--text);padding:0.9rem 2rem;border-radius:9px;font-weight:600;font-size:1rem;text-decoration:none;border:1px solid var(--border);transition:all 0.22s;}
     .btn-secondary:hover{border-color:var(--muted);background:rgba(255,255,255,0.05);}
 
     /* LIVE STATS */
-    .hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;max-width:600px;margin:0 auto;}
+    .hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:14px;overflow:hidden;max-width:580px;margin:0 auto;}
     .stat-item{background:var(--bg2);padding:1.5rem;text-align:center;}
     .stat-num{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:700;color:var(--text);}
     .stat-num.red{color:var(--accent);}
-    .stat-label{font-size:0.75rem;color:var(--muted);margin-top:0.25rem;text-transform:uppercase;letter-spacing:0.05em;}
+    .stat-label{font-size:0.73rem;color:var(--muted);margin-top:0.25rem;text-transform:uppercase;letter-spacing:0.05em;}
 
-    /* TICKER */
-    .ticker{background:var(--accent);padding:0.6rem 0;overflow:hidden;white-space:nowrap;}
-    .ticker-inner{display:inline-flex;gap:3rem;animation:ticker 30s linear infinite;}
-    .ticker-item{font-size:0.8rem;font-weight:600;color:#fff;display:flex;align-items:center;gap:0.5rem;}
-    .ticker-dot{width:6px;height:6px;background:#fff;border-radius:50%;opacity:0.6;}
+    /* SOURCES */
+    .sources{padding:4rem 2rem;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+    .sources-inner{max-width:1200px;margin:0 auto;text-align:center;}
+    .sources-label{font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:2rem;}
+    .sources-list{display:flex;flex-wrap:wrap;gap:0.8rem;justify-content:center;}
+    .source-badge{background:var(--bg3);border:1px solid var(--border);color:var(--muted);padding:0.5rem 1.2rem;border-radius:99px;font-size:0.85rem;font-weight:600;transition:all 0.2s;}
+    .source-badge:hover{color:var(--text);border-color:var(--muted);}
 
     /* FEATURES */
     .section{padding:5rem 2rem;max-width:1200px;margin:0 auto;}
-    .section-tag{font-size:0.75rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem;}
+    .section-tag{font-size:0.73rem;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem;}
     .section-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:700;margin-bottom:1rem;letter-spacing:-0.02em;}
     .section-sub{color:var(--muted);font-size:1rem;max-width:500px;line-height:1.7;}
     .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;margin-top:3rem;}
-    .feature-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:2rem;transition:all 0.3s;position:relative;overflow:hidden;}
+    .feature-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:2rem;transition:all 0.3s;position:relative;overflow:hidden;}
     .feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:opacity 0.3s;}
     .feature-card:hover{border-color:rgba(255,59,59,0.3);transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,0.3);}
     .feature-card:hover::before{opacity:1;}
@@ -92,23 +109,20 @@
     .feature-icon.blue{background:rgba(59,130,246,0.1);}
     .feature-icon.green{background:rgba(34,197,94,0.1);}
     .feature-icon.amber{background:rgba(245,158,11,0.1);}
-    .feature-title{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:600;margin-bottom:0.6rem;}
-    .feature-desc{color:var(--muted);font-size:0.9rem;line-height:1.6;}
+    .feature-title{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:0.6rem;}
+    .feature-desc{color:var(--muted);font-size:0.9rem;line-height:1.65;}
 
-    /* SOURCES */
-    .sources{padding:4rem 2rem;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
-    .sources-inner{max-width:1200px;margin:0 auto;text-align:center;}
-    .sources-label{font-size:0.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:2rem;}
-    .sources-list{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;}
-    .source-badge{background:var(--bg3);border:1px solid var(--border);color:var(--muted);padding:0.5rem 1.2rem;border-radius:99px;font-size:0.85rem;font-weight:600;transition:all 0.2s;}
-    .source-badge:hover{color:var(--text);border-color:var(--muted);}
+    /* AD UNIT */
+    .ad-section{padding:2rem;max-width:1200px;margin:0 auto;}
+    .ad-unit{background:var(--bg2);border:1px dashed rgba(148,163,184,0.12);border-radius:12px;padding:0.8rem;text-align:center;overflow:hidden;}
+    .ad-label{font-size:0.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem;opacity:0.5;}
 
     /* HOW IT WORKS */
-    .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2rem;margin-top:3rem;position:relative;}
+    .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2rem;margin-top:3rem;}
     .step{text-align:center;padding:1.5rem;}
-    .step-num{width:48px;height:48px;background:rgba(255,59,59,0.1);border:1px solid rgba(255,59,59,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;color:var(--accent);margin:0 auto 1rem;}
-    .step-title{font-weight:600;margin-bottom:0.5rem;}
-    .step-desc{color:var(--muted);font-size:0.9rem;line-height:1.6;}
+    .step-num{width:50px;height:50px;background:rgba(255,59,59,0.1);border:1px solid rgba(255,59,59,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:800;color:var(--accent);margin:0 auto 1rem;font-size:1.1rem;}
+    .step-title{font-weight:700;margin-bottom:0.5rem;}
+    .step-desc{color:var(--muted);font-size:0.9rem;line-height:1.65;}
 
     /* CTA */
     .cta-section{padding:6rem 2rem;text-align:center;position:relative;overflow:hidden;}
@@ -124,16 +138,9 @@
     .footer-links{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.5rem;}
     .footer-links a{color:var(--muted);text-decoration:none;font-size:0.85rem;transition:color 0.2s;}
     .footer-links a:hover{color:var(--text);}
-    .footer-copy{color:var(--muted);font-size:0.8rem;}
+    .footer-copy{color:var(--muted);font-size:0.78rem;}
 
-    /* MOBILE NAV */
-    .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:5px;}
-    .hamburger span{width:22px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s;}
-    .mobile-menu{display:none;position:fixed;top:60px;left:0;right:0;background:var(--bg2);border-bottom:1px solid var(--border);padding:1.5rem;z-index:99;flex-direction:column;gap:1rem;}
-    .mobile-menu a{color:var(--muted);text-decoration:none;font-size:1rem;font-weight:500;padding:0.5rem 0;border-bottom:1px solid var(--border);}
-    .mobile-menu.open{display:flex;}
-
-    @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(1.3);}}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(1.4);}}
     @keyframes ticker{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 
     @media(max-width:768px){
@@ -157,6 +164,7 @@
     <a href="feed.html">News Feed</a>
     <a href="#features">Features</a>
     <a href="#how">How It Works</a>
+    <a href="privacy.html">Privacy</a>
     <a href="feed.html" class="nav-cta">Enter Feed →</a>
   </div>
   <div class="hamburger" onclick="toggleMenu()">
@@ -168,20 +176,20 @@
   <a href="feed.html">📰 News Feed</a>
   <a href="#features">⚡ Features</a>
   <a href="#how">🔧 How It Works</a>
-  <a href="admin-login.html">🔐 Admin</a>
+  <a href="privacy.html">🔒 Privacy Policy</a>
 </div>
 
 <!-- BREAKING TICKER -->
-<div class="ticker" style="margin-top:60px;">
-  <div class="ticker-inner" id="ticker">
-    <span class="ticker-item"><div class="ticker-dot"></div>⚡ BREAKING: ConflictPulse AI is now live — Real-time conflict intelligence powered by Gemini</span>
-    <span class="ticker-item"><div class="ticker-dot"></div>🌍 Tracking conflicts across 8 global regions in real-time</span>
+<div class="ticker">
+  <div class="ticker-inner">
+    <span class="ticker-item"><div class="ticker-dot"></div>⚡ LIVE: ConflictPulse AI tracking conflicts worldwide in real-time</span>
+    <span class="ticker-item"><div class="ticker-dot"></div>🌍 8 global sources · Updated every 10 minutes</span>
     <span class="ticker-item"><div class="ticker-dot"></div>🤖 AI-summarized news from BBC, Al Jazeera, Reuters, DW & more</span>
-    <span class="ticker-item"><div class="ticker-dot"></div>📱 Install as app on your phone — works offline too</span>
-    <span class="ticker-item"><div class="ticker-dot"></div>⚡ BREAKING: ConflictPulse AI is now live — Real-time conflict intelligence powered by Gemini</span>
-    <span class="ticker-item"><div class="ticker-dot"></div>🌍 Tracking conflicts across 8 global regions in real-time</span>
+    <span class="ticker-item"><div class="ticker-dot"></div>📱 Install as app — works offline too</span>
+    <span class="ticker-item"><div class="ticker-dot"></div>⚡ LIVE: ConflictPulse AI tracking conflicts worldwide in real-time</span>
+    <span class="ticker-item"><div class="ticker-dot"></div>🌍 8 global sources · Updated every 10 minutes</span>
     <span class="ticker-item"><div class="ticker-dot"></div>🤖 AI-summarized news from BBC, Al Jazeera, Reuters, DW & more</span>
-    <span class="ticker-item"><div class="ticker-dot"></div>📱 Install as app on your phone — works offline too</span>
+    <span class="ticker-item"><div class="ticker-dot"></div>📱 Install as app — works offline too</span>
   </div>
 </div>
 
@@ -250,7 +258,6 @@
   <div class="section-tag">Why ConflictPulse</div>
   <h2 class="section-title">Built Different From Every<br>Other News Site</h2>
   <p class="section-sub">Not just another aggregator. Every feature is designed around conflict intelligence.</p>
-
   <div class="features-grid">
     <div class="feature-card">
       <div class="feature-icon red">🤖</div>
@@ -285,12 +292,25 @@
   </div>
 </section>
 
+<!-- AD UNIT: Between Features and How It Works -->
+<div class="ad-section">
+  <div class="ad-unit">
+    <div class="ad-label">Advertisement</div>
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-8026135429131617"
+         data-ad-slot="AUTO"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+</div>
+
 <!-- HOW IT WORKS -->
 <section class="section" id="how" style="border-top:1px solid var(--border);">
   <div class="section-tag">Under The Hood</div>
   <h2 class="section-title">How ConflictPulse Works</h2>
   <p class="section-sub">Fully automated pipeline from raw RSS to curated intelligence.</p>
-
   <div class="steps">
     <div class="step">
       <div class="step-num">1</div>
@@ -331,46 +351,33 @@
   <div class="footer-links">
     <a href="feed.html">News Feed</a>
     <a href="#features">Features</a>
-    <a href="admin-login.html">Admin</a>
+    <a href="privacy.html">Privacy Policy</a>
   </div>
-  <p class="footer-copy">© 2024 ConflictPulse. Built with Gemini AI. Data from public RSS sources.</p>
+  <p class="footer-copy">© 2025 ConflictPulse. Built with Gemini AI. Data from public RSS sources.</p>
 </footer>
 
 <script>
   const API = 'https://conflictpulse-api.onrender.com';
 
-  // Mobile menu
   function toggleMenu(){
     document.getElementById('mobileMenu').classList.toggle('open');
   }
 
-  // Load live stats
   async function loadStats(){
     try{
-      const res = await fetch(`${API}/api/news?limit=1`);
+      const res  = await fetch(`${API}/api/news?limit=1`);
       const data = await res.json();
-      if(data.pagination){
-        document.getElementById('statArticles').textContent =
-          data.pagination.total.toLocaleString();
-      }
-      if(data.breaking){
-        document.getElementById('statBreaking').textContent =
-          data.breaking.length;
-      }
+      if(data.pagination) document.getElementById('statArticles').textContent = data.pagination.total.toLocaleString();
+      if(data.breaking)   document.getElementById('statBreaking').textContent = data.breaking.length;
     } catch(e){
       document.getElementById('statArticles').textContent = '2,400+';
       document.getElementById('statBreaking').textContent = '12';
     }
   }
 
-  // Install PWA
   let deferredPrompt;
-  window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault();
-    deferredPrompt = e;
-  });
+  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; });
 
-  // Register service worker
   if('serviceWorker' in navigator){
     navigator.serviceWorker.register('sw.js')
       .then(()=> console.log('SW registered'))
