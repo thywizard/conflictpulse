@@ -1,157 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8026135429131617"
-     crossorigin="anonymous"></script>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ConflictPulse — Real-Time War & Conflict Intelligence</title>
-  <meta name="description" content="AI-powered war and conflict news aggregator. Real-time updates from 8 global sources, summarized and categorized by Gemini AI."/>
-  <meta name="google-adsense-account" content="ca-pub-8026135429131617">
+  <meta name="description" content="AI-powered war and conflict news aggregator. Real-time updates from 8 global sources, summarized by Gemini AI. Free, no signup required."/>
+  <meta name="keywords" content="war news, conflict news, real-time war updates, military news, geopolitics, AI news aggregator"/>
+  <meta name="google-adsense-account" content="ca-pub-8026135429131617"/>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="ConflictPulse — Real-Time War & Conflict Intelligence"/>
+  <meta property="og:description" content="AI-powered war and conflict news. Updated every 10 minutes from 8 global sources."/>
+  <meta property="og:image" content="icons/icon-512.png"/>
+  <meta property="og:type" content="website"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="ConflictPulse"/>
+  <meta name="twitter:description" content="Real-time war & conflict intelligence powered by Gemini AI"/>
+
   <link rel="manifest" href="manifest.json"/>
   <link rel="icon" href="icons/icon-192.png"/>
   <meta name="theme-color" content="#0A0E1A"/>
-  <!-- Open Graph -->
-  <meta property="og:title" content="ConflictPulse — Real-Time War Intelligence"/>
-  <meta property="og:description" content="AI-powered war & conflict intelligence. Updated every 10 minutes."/>
-  <meta property="og:image" content="icons/icon-512.png"/>
-  <meta property="og:type" content="website"/>
+  <link rel="canonical" href="https://conflictpulse.vercel.app/"/>
+
+  <!-- AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8026135429131617" crossorigin="anonymous"></script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700;800&display=swap"/>
   <style>
-    :root {
-      --bg:       #0A0E1A;
-      --bg2:      #111827;
-      --bg3:      #1E2D40;
-      --accent:   #FF3B3B;
-      --accent2:  #FF6B6B;
-      --blue:     #3B82F6;
-      --green:    #22C55E;
-      --amber:    #F59E0B;
-      --text:     #F0F4F8;
-      --muted:    #94A3B8;
-      --border:   #1E293B;
-    }
+    :root{--bg:#0A0E1A;--bg2:#111827;--bg3:#1E2D40;--accent:#FF3B3B;--accent2:#FF6B6B;--blue:#3B82F6;--green:#22C55E;--amber:#F59E0B;--text:#F0F4F8;--muted:#94A3B8;--border:#1E293B;}
     *{margin:0;padding:0;box-sizing:border-box;}
     html{scroll-behavior:smooth;}
     body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden;}
 
     /* NAV */
-    nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(20px);background:rgba(10,14,26,0.88);border-bottom:1px solid rgba(255,59,59,0.1);transition:background 0.3s;}
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(20px);background:rgba(10,14,26,0.9);border-bottom:1px solid rgba(255,59,59,0.08);transition:all 0.3s;}
     .logo{display:flex;align-items:center;gap:0.6rem;text-decoration:none;}
     .logo-pulse{width:10px;height:10px;background:var(--accent);border-radius:50%;animation:pulse 1.5s infinite;}
     .logo-text{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;color:var(--text);}
     .logo-text span{color:var(--accent);}
     .nav-links{display:flex;align-items:center;gap:1.5rem;}
-    .nav-links a{color:var(--muted);text-decoration:none;font-size:0.9rem;font-weight:500;transition:color 0.2s;}
+    .nav-links a{color:var(--muted);text-decoration:none;font-size:0.875rem;font-weight:500;transition:color 0.2s;}
     .nav-links a:hover{color:var(--text);}
-    .nav-cta{background:var(--accent)!important;color:#fff!important;padding:0.5rem 1.2rem!important;border-radius:7px;font-weight:700!important;transition:all 0.2s!important;box-shadow:0 0 20px rgba(255,59,59,0.25);}
-    .nav-cta:hover{background:#cc2f2f!important;box-shadow:0 0 30px rgba(255,59,59,0.45)!important;transform:translateY(-1px);}
+    .nav-cta{background:var(--accent)!important;color:#fff!important;padding:0.5rem 1.2rem;border-radius:6px;font-weight:700!important;transition:all 0.2s!important;}
+    .nav-cta:hover{background:#cc2f2f!important;transform:translateY(-1px);}
     .nav-live{display:flex;align-items:center;gap:0.4rem;color:var(--accent);font-size:0.78rem;font-weight:700;}
-    .live-dot{width:8px;height:8px;background:var(--accent);border-radius:50%;animation:pulse 1s infinite;}
-    .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:5px;}
+    .live-dot{width:7px;height:7px;background:var(--accent);border-radius:50%;animation:pulse 1s infinite;}
+    .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;background:none;border:none;}
     .hamburger span{width:22px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s;}
-    .mobile-menu{display:none;position:fixed;top:60px;left:0;right:0;background:var(--bg2);border-bottom:1px solid var(--border);padding:1.5rem;z-index:99;flex-direction:column;gap:1rem;}
+    .mobile-menu{display:none;position:fixed;top:65px;left:0;right:0;background:var(--bg2);border-bottom:1px solid var(--border);padding:1.5rem;z-index:99;flex-direction:column;gap:1rem;}
     .mobile-menu.open{display:flex;}
-    .mobile-menu a{color:var(--muted);text-decoration:none;font-size:1rem;font-weight:500;padding:0.5rem 0;border-bottom:1px solid var(--border);transition:color 0.2s;}
-    .mobile-menu a:hover{color:var(--text);}
+    .mobile-menu a{color:var(--muted);text-decoration:none;font-size:1rem;font-weight:500;padding:0.5rem 0;border-bottom:1px solid var(--border);}
 
     /* TICKER */
-    .ticker{background:var(--accent);padding:0.55rem 0;overflow:hidden;white-space:nowrap;margin-top:60px;}
+    .ticker{background:var(--accent);padding:0.55rem 0;overflow:hidden;white-space:nowrap;margin-top:65px;}
     .ticker-inner{display:inline-flex;gap:3rem;animation:ticker 30s linear infinite;}
-    .ticker-inner:hover{animation-play-state:paused;}
-    .ticker-item{font-size:0.78rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:0.5rem;}
-    .ticker-dot{width:5px;height:5px;background:#fff;border-radius:50%;opacity:0.7;}
+    .ticker-item{font-size:0.78rem;font-weight:600;color:#fff;display:flex;align-items:center;gap:0.5rem;}
+    .ticker-dot{width:5px;height:5px;background:rgba(255,255,255,0.6);border-radius:50%;}
 
     /* HERO */
-    .hero{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:6rem 2rem 4rem;}
-    .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(255,59,59,0.08) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(59,130,246,0.06) 0%,transparent 50%);pointer-events:none;}
-    .grid-overlay{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.018) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;}
-    .hero-content{max-width:900px;text-align:center;position:relative;z-index:1;}
-    .hero-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(255,59,59,0.1);border:1px solid rgba(255,59,59,0.3);color:var(--accent);padding:0.4rem 1rem;border-radius:99px;font-size:0.78rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:2rem;}
-    .hero-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.5rem,7vw,5.5rem);font-weight:700;line-height:1.05;margin-bottom:1.5rem;letter-spacing:-0.02em;}
-    .hero-title .highlight{color:var(--accent);position:relative;}
-    .hero-title .highlight::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:3px;background:var(--accent);border-radius:2px;}
-    .hero-sub{font-size:clamp(1rem,2.5vw,1.2rem);color:var(--muted);max-width:600px;margin:0 auto 3rem;line-height:1.75;}
-    .hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:4rem;}
-    .btn-primary{display:inline-flex;align-items:center;gap:0.5rem;background:var(--accent);color:#fff;padding:0.9rem 2rem;border-radius:9px;font-weight:700;font-size:1rem;text-decoration:none;transition:all 0.22s;box-shadow:0 0 30px rgba(255,59,59,0.3);}
+    .hero{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:4rem 2rem;}
+    .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(255,59,59,0.07) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(59,130,246,0.05) 0%,transparent 50%);}
+    .grid-overlay{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:60px 60px;}
+    .hero-content{max-width:860px;text-align:center;position:relative;z-index:1;}
+    .hero-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(255,59,59,0.1);border:1px solid rgba(255,59,59,0.3);color:var(--accent);padding:0.4rem 1rem;border-radius:99px;font-size:0.78rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:2rem;}
+    .hero-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.4rem,7vw,5.2rem);font-weight:800;line-height:1.05;margin-bottom:1.5rem;letter-spacing:-0.03em;}
+    .hero-title .highlight{color:var(--accent);}
+    .hero-sub{font-size:clamp(1rem,2.5vw,1.15rem);color:var(--muted);max-width:580px;margin:0 auto 2.5rem;line-height:1.75;}
+    .hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:3.5rem;}
+    .btn-primary{display:inline-flex;align-items:center;gap:0.5rem;background:var(--accent);color:#fff;padding:0.9rem 2rem;border-radius:10px;font-weight:700;font-size:1rem;text-decoration:none;transition:all 0.2s;box-shadow:0 0 30px rgba(255,59,59,0.3);}
     .btn-primary:hover{background:#cc2f2f;transform:translateY(-2px);box-shadow:0 0 40px rgba(255,59,59,0.5);}
-    .btn-secondary{display:inline-flex;align-items:center;gap:0.5rem;background:transparent;color:var(--text);padding:0.9rem 2rem;border-radius:9px;font-weight:600;font-size:1rem;text-decoration:none;border:1px solid var(--border);transition:all 0.22s;}
-    .btn-secondary:hover{border-color:var(--muted);background:rgba(255,255,255,0.05);}
+    .btn-secondary{display:inline-flex;align-items:center;gap:0.5rem;background:transparent;color:var(--text);padding:0.9rem 2rem;border-radius:10px;font-weight:600;font-size:1rem;text-decoration:none;border:1px solid var(--border);transition:all 0.2s;}
+    .btn-secondary:hover{border-color:var(--muted);background:rgba(255,255,255,0.04);}
 
-    /* LIVE STATS */
-    .hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:14px;overflow:hidden;max-width:580px;margin:0 auto;}
-    .stat-item{background:var(--bg2);padding:1.5rem;text-align:center;}
-    .stat-num{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:700;color:var(--text);}
+    /* HERO STATS */
+    .hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:14px;overflow:hidden;max-width:560px;margin:0 auto;}
+    .stat-item{background:var(--bg2);padding:1.4rem;text-align:center;}
+    .stat-num{font-family:'Space Grotesk',sans-serif;font-size:1.9rem;font-weight:800;color:var(--text);}
     .stat-num.red{color:var(--accent);}
-    .stat-label{font-size:0.73rem;color:var(--muted);margin-top:0.25rem;text-transform:uppercase;letter-spacing:0.05em;}
+    .stat-label{font-size:0.7rem;color:var(--muted);margin-top:0.2rem;text-transform:uppercase;letter-spacing:0.06em;}
 
     /* SOURCES */
-    .sources{padding:4rem 2rem;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
-    .sources-inner{max-width:1200px;margin:0 auto;text-align:center;}
-    .sources-label{font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:2rem;}
+    .sources{padding:3.5rem 2rem;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+    .sources-inner{max-width:1100px;margin:0 auto;text-align:center;}
+    .sources-label{font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1.8rem;}
     .sources-list{display:flex;flex-wrap:wrap;gap:0.8rem;justify-content:center;}
-    .source-badge{background:var(--bg3);border:1px solid var(--border);color:var(--muted);padding:0.5rem 1.2rem;border-radius:99px;font-size:0.85rem;font-weight:600;transition:all 0.2s;}
+    .source-badge{background:var(--bg3);border:1px solid var(--border);color:var(--muted);padding:0.45rem 1.1rem;border-radius:99px;font-size:0.82rem;font-weight:600;transition:all 0.2s;}
     .source-badge:hover{color:var(--text);border-color:var(--muted);}
 
-    /* FEATURES */
-    .section{padding:5rem 2rem;max-width:1200px;margin:0 auto;}
-    .section-tag{font-size:0.73rem;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem;}
-    .section-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:700;margin-bottom:1rem;letter-spacing:-0.02em;}
-    .section-sub{color:var(--muted);font-size:1rem;max-width:500px;line-height:1.7;}
-    .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;margin-top:3rem;}
-    .feature-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:2rem;transition:all 0.3s;position:relative;overflow:hidden;}
-    .feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:opacity 0.3s;}
-    .feature-card:hover{border-color:rgba(255,59,59,0.3);transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,0.3);}
-    .feature-card:hover::before{opacity:1;}
-    .feature-icon{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:1.2rem;}
-    .feature-icon.red{background:rgba(255,59,59,0.1);}
-    .feature-icon.blue{background:rgba(59,130,246,0.1);}
-    .feature-icon.green{background:rgba(34,197,94,0.1);}
-    .feature-icon.amber{background:rgba(245,158,11,0.1);}
-    .feature-title{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:0.6rem;}
-    .feature-desc{color:var(--muted);font-size:0.9rem;line-height:1.65;}
+    /* SECTION */
+    .section{padding:5rem 2rem;max-width:1100px;margin:0 auto;}
+    .section-tag{font-size:0.72rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);margin-bottom:0.8rem;}
+    .section-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,4vw,2.8rem);font-weight:700;margin-bottom:1rem;letter-spacing:-0.02em;}
+    .section-sub{color:var(--muted);font-size:0.95rem;max-width:480px;line-height:1.7;}
 
-    /* AD UNIT */
-    .ad-section{padding:2rem;max-width:1200px;margin:0 auto;}
-    .ad-unit{background:var(--bg2);border:1px dashed rgba(148,163,184,0.12);border-radius:12px;padding:0.8rem;text-align:center;overflow:hidden;}
-    .ad-label{font-size:0.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem;opacity:0.5;}
+    /* FEATURES */
+    .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:1.2rem;margin-top:2.5rem;}
+    .feature-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.8rem;transition:all 0.3s;position:relative;overflow:hidden;}
+    .feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:opacity 0.3s;}
+    .feature-card:hover{border-color:rgba(255,59,59,0.25);transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,0.3);}
+    .feature-card:hover::before{opacity:1;}
+    .feature-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1rem;}
+    .fi-red{background:rgba(255,59,59,0.1);}
+    .fi-blue{background:rgba(59,130,246,0.1);}
+    .fi-green{background:rgba(34,197,94,0.1);}
+    .fi-amber{background:rgba(245,158,11,0.1);}
+    .feature-title{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:600;margin-bottom:0.5rem;}
+    .feature-desc{color:var(--muted);font-size:0.875rem;line-height:1.65;}
 
     /* HOW IT WORKS */
-    .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2rem;margin-top:3rem;}
-    .step{text-align:center;padding:1.5rem;}
-    .step-num{width:50px;height:50px;background:rgba(255,59,59,0.1);border:1px solid rgba(255,59,59,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:800;color:var(--accent);margin:0 auto 1rem;font-size:1.1rem;}
-    .step-title{font-weight:700;margin-bottom:0.5rem;}
-    .step-desc{color:var(--muted);font-size:0.9rem;line-height:1.65;}
+    .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-top:2.5rem;}
+    .step{text-align:center;padding:1.2rem;}
+    .step-num{width:44px;height:44px;background:rgba(255,59,59,0.1);border:1px solid rgba(255,59,59,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;color:var(--accent);margin:0 auto 1rem;}
+    .step-title{font-weight:600;margin-bottom:0.4rem;font-size:0.95rem;}
+    .step-desc{color:var(--muted);font-size:0.85rem;line-height:1.6;}
+
+    /* AD BANNER */
+    .ad-section{padding:1.5rem 2rem;max-width:1100px;margin:0 auto;text-align:center;}
+    .ad-label{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem;opacity:0.5;}
+    .ad-wrap{background:var(--bg2);border:1px dashed rgba(148,163,184,0.15);border-radius:12px;padding:1rem;display:inline-block;min-width:320px;}
 
     /* CTA */
     .cta-section{padding:6rem 2rem;text-align:center;position:relative;overflow:hidden;}
-    .cta-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(255,59,59,0.08) 0%,transparent 70%);pointer-events:none;}
-    .cta-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,5vw,4rem);font-weight:700;margin-bottom:1rem;letter-spacing:-0.02em;}
-    .cta-sub{color:var(--muted);font-size:1.1rem;margin-bottom:2.5rem;}
+    .cta-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(255,59,59,0.07) 0%,transparent 70%);}
+    .cta-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,5vw,3.5rem);font-weight:800;margin-bottom:1rem;letter-spacing:-0.02em;position:relative;}
+    .cta-sub{color:var(--muted);font-size:1rem;margin-bottom:2.2rem;position:relative;}
 
     /* FOOTER */
-    footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2rem;text-align:center;}
-    .footer-logo{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;margin-bottom:0.5rem;}
+    footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2rem;}
+    .footer-inner{max-width:1100px;margin:0 auto;}
+    .footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2rem;margin-bottom:2rem;}
+    .footer-brand{}
+    .footer-logo{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;margin-bottom:0.5rem;}
     .footer-logo span{color:var(--accent);}
-    .footer-sub{color:var(--muted);font-size:0.85rem;margin-bottom:1.5rem;}
-    .footer-links{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.5rem;}
-    .footer-links a{color:var(--muted);text-decoration:none;font-size:0.85rem;transition:color 0.2s;}
+    .footer-desc{color:var(--muted);font-size:0.82rem;line-height:1.6;max-width:260px;}
+    .footer-col-title{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:1rem;}
+    .footer-links{display:flex;flex-direction:column;gap:0.5rem;}
+    .footer-links a{color:var(--muted);text-decoration:none;font-size:0.82rem;transition:color 0.2s;}
     .footer-links a:hover{color:var(--text);}
+    .footer-bottom{border-top:1px solid var(--border);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
     .footer-copy{color:var(--muted);font-size:0.78rem;}
+    .footer-legal{display:flex;gap:1.2rem;}
+    .footer-legal a{color:var(--muted);text-decoration:none;font-size:0.78rem;transition:color 0.2s;}
+    .footer-legal a:hover{color:var(--text);}
 
     @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(1.4);}}
     @keyframes ticker{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 
     @media(max-width:768px){
+      nav{padding:0.9rem 1.2rem;}
       .nav-links{display:none;}
       .hamburger{display:flex;}
       .hero-stats{grid-template-columns:repeat(3,1fr);}
-      .stat-num{font-size:1.4rem;}
+      .stat-num{font-size:1.3rem;}
+      .footer-top{grid-template-columns:1fr 1fr;}
+    }
+    @media(max-width:500px){
+      .footer-top{grid-template-columns:1fr;}
+      .footer-bottom{flex-direction:column;text-align:center;}
     }
   </style>
 </head>
 <body>
+
+<!-- CONFIG -->
+<script src="config.js"></script>
 
 <!-- NAV -->
 <nav>
@@ -164,32 +177,32 @@
     <a href="feed.html">News Feed</a>
     <a href="#features">Features</a>
     <a href="#how">How It Works</a>
-    <a href="privacy.html">Privacy</a>
     <a href="feed.html" class="nav-cta">Enter Feed →</a>
   </div>
-  <div class="hamburger" onclick="toggleMenu()">
+  <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">
     <span></span><span></span><span></span>
-  </div>
+  </button>
 </nav>
 
 <div class="mobile-menu" id="mobileMenu">
   <a href="feed.html">📰 News Feed</a>
   <a href="#features">⚡ Features</a>
   <a href="#how">🔧 How It Works</a>
+  <a href="admin-login.html">🔐 Admin</a>
   <a href="privacy.html">🔒 Privacy Policy</a>
 </div>
 
-<!-- BREAKING TICKER -->
+<!-- TICKER -->
 <div class="ticker">
   <div class="ticker-inner">
-    <span class="ticker-item"><div class="ticker-dot"></div>⚡ LIVE: ConflictPulse AI tracking conflicts worldwide in real-time</span>
-    <span class="ticker-item"><div class="ticker-dot"></div>🌍 8 global sources · Updated every 10 minutes</span>
-    <span class="ticker-item"><div class="ticker-dot"></div>🤖 AI-summarized news from BBC, Al Jazeera, Reuters, DW & more</span>
-    <span class="ticker-item"><div class="ticker-dot"></div>📱 Install as app — works offline too</span>
-    <span class="ticker-item"><div class="ticker-dot"></div>⚡ LIVE: ConflictPulse AI tracking conflicts worldwide in real-time</span>
-    <span class="ticker-item"><div class="ticker-dot"></div>🌍 8 global sources · Updated every 10 minutes</span>
-    <span class="ticker-item"><div class="ticker-dot"></div>🤖 AI-summarized news from BBC, Al Jazeera, Reuters, DW & more</span>
-    <span class="ticker-item"><div class="ticker-dot"></div>📱 Install as app — works offline too</span>
+    <span class="ticker-item"><div class="ticker-dot"></div>⚡ Real-time conflict intelligence — Updated every 10 minutes</span>
+    <span class="ticker-item"><div class="ticker-dot"></div>🤖 Powered by Gemini 2.0 Flash AI — Summarized, categorized, scored</span>
+    <span class="ticker-item"><div class="ticker-dot"></div>🌍 Covering 8 global regions — Middle East, Europe, Africa, Asia & more</span>
+    <span class="ticker-item"><div class="ticker-dot"></div>📱 Install as app on your phone — Works offline too</span>
+    <span class="ticker-item"><div class="ticker-dot"></div>⚡ Real-time conflict intelligence — Updated every 10 minutes</span>
+    <span class="ticker-item"><div class="ticker-dot"></div>🤖 Powered by Gemini 2.0 Flash AI — Summarized, categorized, scored</span>
+    <span class="ticker-item"><div class="ticker-dot"></div>🌍 Covering 8 global regions — Middle East, Europe, Africa, Asia & more</span>
+    <span class="ticker-item"><div class="ticker-dot"></div>📱 Install as app on your phone — Works offline too</span>
   </div>
 </div>
 
@@ -198,26 +211,19 @@
   <div class="hero-bg"></div>
   <div class="grid-overlay"></div>
   <div class="hero-content">
-    <div class="hero-badge">
-      <div class="live-dot"></div>
-      AI-Powered War Intelligence
-    </div>
+    <div class="hero-badge"><div class="live-dot"></div>AI-Powered War Intelligence</div>
     <h1 class="hero-title">
       The World's Conflicts.<br>
       <span class="highlight">Tracked in Real-Time.</span>
     </h1>
     <p class="hero-sub">
-      ConflictPulse aggregates war and conflict news from 8 global sources, 
-      then uses Gemini AI to summarize, categorize, and score every story — 
+      ConflictPulse aggregates war and conflict news from 8 global sources,
+      then uses Gemini AI to summarize, categorize, and score every story —
       so you get the full picture in seconds.
     </p>
     <div class="hero-btns">
-      <a href="feed.html" class="btn-primary">
-        📰 Enter News Feed
-      </a>
-      <a href="#features" class="btn-secondary">
-        Learn More ↓
-      </a>
+      <a href="feed.html" class="btn-primary">📰 Enter News Feed</a>
+      <a href="#features" class="btn-secondary">Learn More ↓</a>
     </div>
     <div class="hero-stats">
       <div class="stat-item">
@@ -229,17 +235,31 @@
         <div class="stat-label">Breaking Now</div>
       </div>
       <div class="stat-item">
-        <div class="stat-num" id="statSources">8</div>
+        <div class="stat-num">8</div>
         <div class="stat-label">Global Sources</div>
       </div>
     </div>
   </div>
 </section>
 
+<!-- AD BANNER -->
+<div class="ad-section">
+  <div class="ad-label">Advertisement</div>
+  <div class="ad-wrap">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-8026135429131617"
+         data-ad-slot="auto"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+</div>
+
 <!-- SOURCES -->
 <div class="sources">
   <div class="sources-inner">
-    <p class="sources-label">Aggregating from world-leading sources</p>
+    <p class="sources-label">Aggregating from world-leading news sources</p>
     <div class="sources-list">
       <span class="source-badge">📺 BBC World</span>
       <span class="source-badge">🌐 Al Jazeera</span>
@@ -257,49 +277,49 @@
 <section class="section" id="features">
   <div class="section-tag">Why ConflictPulse</div>
   <h2 class="section-title">Built Different From Every<br>Other News Site</h2>
-  <p class="section-sub">Not just another aggregator. Every feature is designed around conflict intelligence.</p>
+  <p class="section-sub">Not just another aggregator. Every feature is built around conflict intelligence.</p>
   <div class="features-grid">
     <div class="feature-card">
-      <div class="feature-icon red">🤖</div>
+      <div class="feature-icon fi-red">🤖</div>
       <div class="feature-title">Gemini AI Summaries</div>
       <div class="feature-desc">Every article is automatically summarized into 2–3 sentences by Google's Gemini 2.0 Flash. Get the facts without reading full articles.</div>
     </div>
     <div class="feature-card">
-      <div class="feature-icon red">⚡</div>
+      <div class="feature-icon fi-red">🔥</div>
       <div class="feature-title">Conflict Score 1–10</div>
       <div class="feature-desc">AI rates every story on a conflict severity scale. Score 10 means mass casualty events. Know instantly how serious each story is.</div>
     </div>
     <div class="feature-card">
-      <div class="feature-icon blue">🌍</div>
+      <div class="feature-icon fi-blue">🌍</div>
       <div class="feature-title">Region & Topic Filters</div>
       <div class="feature-desc">Filter by Middle East, Europe, Africa, Asia and more. Drill into Airstrikes, Diplomacy, Sanctions, Ground Combat, and 10 other topics.</div>
     </div>
     <div class="feature-card">
-      <div class="feature-icon blue">🏷️</div>
+      <div class="feature-icon fi-blue">🏷️</div>
       <div class="feature-title">Entity Extraction</div>
       <div class="feature-desc">AI automatically extracts countries, armed groups, leaders, and organizations mentioned in every article for instant context.</div>
     </div>
     <div class="feature-card">
-      <div class="feature-icon green">📱</div>
+      <div class="feature-icon fi-green">📱</div>
       <div class="feature-title">Install as PWA</div>
       <div class="feature-desc">Add ConflictPulse to your phone's home screen like a native app. Reads offline. Gets push notifications for breaking news.</div>
     </div>
     <div class="feature-card">
-      <div class="feature-icon amber">🔔</div>
+      <div class="feature-icon fi-amber">🔔</div>
       <div class="feature-title">Breaking News Alerts</div>
       <div class="feature-desc">Breaking stories pinned at the top with a red urgent banner. Never miss a major escalation no matter when it happens.</div>
     </div>
   </div>
 </section>
 
-<!-- AD UNIT: Between Features and How It Works -->
+<!-- AD BANNER 2 -->
 <div class="ad-section">
-  <div class="ad-unit">
-    <div class="ad-label">Advertisement</div>
+  <div class="ad-label">Advertisement</div>
+  <div class="ad-wrap">
     <ins class="adsbygoogle"
          style="display:block"
          data-ad-client="ca-pub-8026135429131617"
-         data-ad-slot="AUTO"
+         data-ad-slot="auto"
          data-ad-format="auto"
          data-full-width-responsive="true"></ins>
     <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
@@ -315,22 +335,22 @@
     <div class="step">
       <div class="step-num">1</div>
       <div class="step-title">RSS Fetch</div>
-      <div class="step-desc">Every 10 minutes, our backend fetches the latest headlines from 8 global news sources automatically.</div>
+      <div class="step-desc">Every 10 minutes, our backend automatically fetches the latest headlines from 8 global news sources.</div>
     </div>
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-title">AI Processing</div>
-      <div class="step-desc">New articles are batch-sent to Gemini 2.0 Flash, which summarizes, categorizes, scores, and extracts entities.</div>
+      <div class="step-desc">New articles are sent to Gemini 2.0 Flash, which summarizes, categorizes, scores severity, and extracts entities.</div>
     </div>
     <div class="step">
       <div class="step-num">3</div>
       <div class="step-title">Deduplication</div>
-      <div class="step-desc">AI detects duplicate stories covering the same event from multiple sources — only unique stories are saved.</div>
+      <div class="step-desc">AI detects duplicate stories from multiple sources — only unique, conflict-related stories are saved to the database.</div>
     </div>
     <div class="step">
       <div class="step-num">4</div>
       <div class="step-title">Live Feed</div>
-      <div class="step-desc">Processed articles appear instantly in the feed, sorted by recency, with filters and search ready to use.</div>
+      <div class="step-desc">Processed articles appear in the feed sorted by recency, with filters, search, and conflict scoring ready to use.</div>
     </div>
   </div>
 </section>
@@ -339,52 +359,73 @@
 <section class="cta-section">
   <h2 class="cta-title">Stay Ahead of Every Conflict.</h2>
   <p class="cta-sub">Free. No signup required. Just open and read.</p>
-  <a href="feed.html" class="btn-primary" style="font-size:1.1rem;padding:1rem 2.5rem;">
-    📰 Open News Feed →
-  </a>
+  <a href="feed.html" class="btn-primary" style="font-size:1.05rem;padding:1rem 2.5rem;margin:0 auto;">📰 Open News Feed →</a>
 </section>
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-logo">Conflict<span>Pulse</span></div>
-  <p class="footer-sub">AI-powered war & conflict intelligence. Updated every 10 minutes.</p>
-  <div class="footer-links">
-    <a href="feed.html">News Feed</a>
-    <a href="#features">Features</a>
-    <a href="privacy.html">Privacy Policy</a>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo">Conflict<span>Pulse</span></div>
+        <p class="footer-desc">AI-powered war & conflict intelligence. Real-time news from 8 global sources, summarized by Gemini AI. Updated every 10 minutes.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Navigate</div>
+        <div class="footer-links">
+          <a href="index.html">Home</a>
+          <a href="feed.html">News Feed</a>
+          <a href="feed.html?importance=breaking">Breaking News</a>
+          <a href="admin-login.html">Admin</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Regions</div>
+        <div class="footer-links">
+          <a href="feed.html?region=Middle+East">Middle East</a>
+          <a href="feed.html?region=Europe">Europe</a>
+          <a href="feed.html?region=Africa">Africa</a>
+          <a href="feed.html?region=Asia">Asia</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Legal</div>
+        <div class="footer-links">
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Service</a>
+          <a href="privacy.html#cookies">Cookie Policy</a>
+          <a href="privacy.html#contact">Contact</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025 ConflictPulse. Built with Gemini AI. Data from public RSS sources.</div>
+      <div class="footer-legal">
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="privacy.html#contact">Contact</a>
+      </div>
+    </div>
   </div>
-  <p class="footer-copy">© 2025 ConflictPulse. Built with Gemini AI. Data from public RSS sources.</p>
 </footer>
 
 <script>
-  const API = 'https://conflictpulse-api.onrender.com';
+function toggleMenu(){ document.getElementById('mobileMenu').classList.toggle('open'); }
 
-  function toggleMenu(){
-    document.getElementById('mobileMenu').classList.toggle('open');
+async function loadStats(){
+  try {
+    const res  = await fetch(`${CP.API}/api/news?limit=1`);
+    const data = await res.json();
+    if(data.pagination) document.getElementById('statArticles').textContent = data.pagination.total.toLocaleString();
+    if(data.breaking)   document.getElementById('statBreaking').textContent = data.breaking.length;
+  } catch(e) {
+    document.getElementById('statArticles').textContent = '2,400+';
+    document.getElementById('statBreaking').textContent = '12';
   }
+}
 
-  async function loadStats(){
-    try{
-      const res  = await fetch(`${API}/api/news?limit=1`);
-      const data = await res.json();
-      if(data.pagination) document.getElementById('statArticles').textContent = data.pagination.total.toLocaleString();
-      if(data.breaking)   document.getElementById('statBreaking').textContent = data.breaking.length;
-    } catch(e){
-      document.getElementById('statArticles').textContent = '2,400+';
-      document.getElementById('statBreaking').textContent = '12';
-    }
-  }
-
-  let deferredPrompt;
-  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; });
-
-  if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('sw.js')
-      .then(()=> console.log('SW registered'))
-      .catch(e => console.log('SW error:', e));
-  }
-
-  loadStats();
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+loadStats();
 </script>
 </body>
 </html>
