@@ -638,7 +638,8 @@ function createHeroCard(a) {
 function createCard(a) {
   const el = document.createElement('div');
   el.className = `article-card imp-${a.importance||'low'}`;
-  el.onclick = () => openModal(a);
+  el.onclick = () => window.location.href = 
+  `https://thywizard.github.io/conflictpulse/article.html?id=${article._id}`;
   const score   = a.conflictScore || 5;
   const isLiked = likedArticles.includes(a._id);
   const isSaved = savedArticles.some(s => s._id === a._id);
